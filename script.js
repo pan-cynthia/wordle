@@ -50,6 +50,7 @@ document.addEventListener("keyup", (e) => {
   // used up all guesses, gameover
   if (!gameOver && row == height) {
     gameOver = true;
+    document.getElementById("answer").innerText = word;
   }
 })
 
