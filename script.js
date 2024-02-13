@@ -7,6 +7,18 @@ var col = 0; // curr letter in attempt
 var gameOver = false;
 var word = "APPLE";
 
+// map to store char counts of word
+// use in update function to change tile colors when there are duplicate letters
+let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
+for (let i = 0; i < word.length; ++i) {
+  letter = word[i];
+  if (letterCount[letter]) {
+    letterCount[letter]++;
+  } else {
+    letterCount[letter] = 1;
+  }
+}
+
 window.onload = function() {
   initialize();
 }
@@ -57,21 +69,39 @@ document.addEventListener("keyup", (e) => {
 // update tile colors
 function update() {
   let correct = 0;
+
+  // check if letters are in correct positions first
   for (let c = 0; c < width; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currTile.innerText;
 
     if (word[c] == letter) { // is it in the correct position?
-      currTile.classList.add("correct");
+      currTile.classList.add("correct"); // change tile color to green
       correct++;
-    } else if (word.includes(letter)) { // is it in the word?
-      currTile.classList.add("present");
-    } else { // not in the word
-      currTile.classList.add("absent");
+      letterCount[letter]--;
     }
 
     if (correct == width) {
       gameOver = true;
+    }
+  }
+
+  // iterate again and mark letters that are present but in the wrong positions
+  for (let c = 0; c < width; ++c) {
+    let currTile = document.getElementById(row.toString() + "-" + c.toString());
+    let letter = currTile.innerText;
+
+    /* solves problem of duplicate letters getting incorrectly highlighted
+       ex: if word is APPLE and AAAAA gets entered
+           the last 4 A tiles will get colored yellow when they should be grey
+    */
+    if (!currTile.classList.contains("correct")) {
+      if (word.includes(letter) && letterCount[letter] > 0) { // is it in the word?
+        currTile.classList.add("present"); // change tile color to yellow
+        letterCount[letter]--;
+      } else { // not in the word
+        currTile.classList.add("absent"); // change tile color to grey
+      }
     }
   }
 }
