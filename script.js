@@ -23,3 +23,37 @@ function initialize() {
     }
   }
 }
+
+// listen for key presses
+document.addEventListener("keyup", (e) => {
+  if (gameOver) return;
+  if ("KeyA" <= e.code && e.code <= "KeyZ") { // check if alphabet char was entered
+    if (col < width) {
+      let currTile = document.getElementById(row.toString() + "-" + col.toString());
+      if (currTile.innerText == "") {
+        currTile.innerText = e.code[3];
+        col++;
+      }
+    }
+  } else if (e.code == "Backspace") { // check if delete key was pressed
+    if (col > 0 && col <= width) {
+      col--;
+    }
+    let currTile = document.getElementById(row.toString() + "-" + col.toString());
+    currTile.innerText = "";
+  } else if (e.code == "Enter") { // check if enter key was pressed
+    update();
+    row++; // move to next row, next attempt
+    col = 0; // start of 0 for new row
+  }
+
+  // used up all guesses, gameover
+  if (!gameOver && row == height) {
+    gameOver = true;
+  }
+})
+
+// update tile colors
+function update() {
+
+}
