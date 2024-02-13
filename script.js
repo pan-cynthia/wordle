@@ -7,18 +7,6 @@ var col = 0; // curr letter in attempt
 var gameOver = false;
 var word = "APPLE";
 
-// map to store char counts of word
-// use in update function to change tile colors when there are duplicate letters
-let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
-for (let i = 0; i < word.length; ++i) {
-  letter = word[i];
-  if (letterCount[letter]) {
-    letterCount[letter]++;
-  } else {
-    letterCount[letter] = 1;
-  }
-}
-
 window.onload = function() {
   initialize();
 }
@@ -69,6 +57,16 @@ document.addEventListener("keyup", (e) => {
 // update tile colors
 function update() {
   let correct = 0;
+   // map to store char counts of word, use to change tile colors when there are dup letters
+  let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
+  for (let i = 0; i < word.length; ++i) {
+    letter = word[i];
+    if (letterCount[letter]) {
+      letterCount[letter]++;
+    } else {
+      letterCount[letter] = 1;
+    }
+  }
 
   // check if letters are in correct positions first
   for (let c = 0; c < width; ++c) {
