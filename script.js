@@ -41,7 +41,7 @@ document.addEventListener("keyup", (e) => {
     }
     let currTile = document.getElementById(row.toString() + "-" + col.toString());
     currTile.innerText = "";
-  } else if (e.code == "Enter") { // check if enter key was pressed
+  } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
     row++; // move to next row, next attempt
     col = 0; // start of 0 for new row
