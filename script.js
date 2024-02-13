@@ -55,5 +55,22 @@ document.addEventListener("keyup", (e) => {
 
 // update tile colors
 function update() {
+  let correct = 0;
+  for (let c = 0; c < width; ++c) {
+    let currTile = document.getElementById(row.toString() + "-" + c.toString());
+    let letter = currTile.innerText;
 
+    if (word[c] == letter) { // is it in the correct position?
+      currTile.classList.add("correct");
+      correct++;
+    } else if (word.includes(letter)) { // is it in the word?
+      currTile.classList.add("present");
+    } else { // not in the word
+      currTile.classList.add("absent");
+    }
+
+    if (correct == width) {
+      gameOver = true;
+    }
+  }
 }

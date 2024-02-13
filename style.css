@@ -38,3 +38,21 @@ hr {
   justify-content: center;
   align-items: center;
 }
+
+.correct {
+  background-color: #6AAA64;
+  color: white;
+  border-color: white;
+}
+  
+.present {
+  background-color: #C9B458;
+  color: white;
+  border-color: white;
+}
+  
+.absent {
+  background-color: #787C7E;
+  color: white;
+  border-color: white;
+}
