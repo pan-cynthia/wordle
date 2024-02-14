@@ -5,7 +5,8 @@ var row = 0; // curr attempt
 var col = 0; // curr letter in attempt
 
 var gameOver = false;
-var word = "APPLE";
+
+var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
 
 window.onload = function() {
   initialize();
@@ -43,8 +44,6 @@ document.addEventListener("keyup", (e) => {
     currTile.innerText = "";
   } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
-    row++; // move to next row, next attempt
-    col = 0; // start of 0 for new row
   }
 
   // used up all guesses, gameover
@@ -56,6 +55,23 @@ document.addEventListener("keyup", (e) => {
 
 // update tile colors
 function update() {
+  // check if guess is a valid word
+  let guess = "";
+  document.getElementById("answer").innerText = "";
+
+  for (let c = 0; c < width; ++c) {
+    let currTile = document.getElementById(row.toString() + "-" + c.toString());
+    let letter = currTile.innerText;
+    guess += letter;
+  }
+
+  guess = guess.toLowerCase();
+  if (!guessList.includes(guess)) {
+    document.getElementById("answer").innerText = "Not in word list";
+    return;
+  }
+
+  // start processing word and updating tile colors
   let correct = 0;
    // map to store char counts of word, use to change tile colors when there are dup letters
   let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
@@ -102,4 +118,7 @@ function update() {
       }
     }
   }
+
+  row++; // move to next row, next attempt
+  col = 0; // start of 0 for new row
 }
