@@ -33,6 +33,7 @@ document.addEventListener("keyup", (e) => {
       let currTile = document.getElementById(row.toString() + "-" + col.toString());
       if (currTile.innerText == "") {
         currTile.innerText = e.code[3];
+        currTile.classList.add("filled-tile");
         col++;
       }
     }
@@ -42,6 +43,7 @@ document.addEventListener("keyup", (e) => {
     }
     let currTile = document.getElementById(row.toString() + "-" + col.toString());
     currTile.innerText = "";
+    currTile.classList.remove("filled-tile");
   } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
   }
