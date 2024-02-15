@@ -66,3 +66,66 @@ hr {
   color: white;
   border-color: #787C7E;
 }
+
+.keyboard-row {
+  width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.key-tile {
+  /* box */
+  background-color: #d3d6da;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  width: 42px;
+  height: 60px;
+  margin: 3px;
+
+  /* text */
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.enter-key-tile {
+  /* box */
+  background-color: #d3d6da;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  width: 65px;
+  height: 60px;
+  margin: 3px;
+
+  /* text */
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.backspace-key-tile {
+  /* box */
+  background-color: #d3d6da;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  width: 65px;
+  height: 60px;
+  margin: 3px;
+
+  /* text */
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

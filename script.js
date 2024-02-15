@@ -23,10 +23,53 @@ function initialize() {
       document.getElementById("board").appendChild(tile); // adds each tile into the board div
     }
   }
+
+  // create keyboard
+  let keyboard = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "⌫"]
+  ]
+
+  for (let i = 0; i < keyboard.length; ++i) {
+    let currRow = keyboard[i];
+    let keyboardRow = document.createElement("div");
+    keyboardRow.classList.add("keyboard-row");
+
+    for (let j = 0; j < currRow.length; ++j) {
+      let keyTile = document.createElement("div");
+      let key = currRow[j];
+      keyTile.innerText = key;
+
+      if (key == "ENTER") {
+        keyTile.id = "Enter";
+        keyTile.classList.add("enter-key-tile");
+      } else if (key == "⌫") {
+        keyTile.id = "Backspace";
+        keyTile.classList.add("backspace-key-tile")
+      } else if ("A" <= key && key <= "Z") {
+        keyTile.id = "Key" + key;
+        keyTile.classList.add("key-tile"); // "Key" + "A"
+      }
+
+      keyTile.addEventListener("click", processKey);
+      keyboardRow.appendChild(keyTile);
+    }
+    document.body.appendChild(keyboardRow);
+  }
 }
 
 // listen for key presses
 document.addEventListener("keyup", (e) => {
+  processInput(e);
+})
+
+function processKey() {
+  let e = {"code" : this.id};
+  processInput(e);
+}
+
+function processInput(e) {
   if (gameOver) return;
   if ("KeyA" <= e.code && e.code <= "KeyZ") { // check if alphabet char was entered
     if (col < width) {
@@ -53,7 +96,7 @@ document.addEventListener("keyup", (e) => {
     gameOver = true;
     document.getElementById("answer").innerText = word;
   }
-})
+}
 
 // update tile colors
 function update() {
