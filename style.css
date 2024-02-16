@@ -49,24 +49,6 @@ hr {
   border: 2px solid darkgray;
 }
 
-.correct {
-  background-color: #6AAA64;
-  color: white;
-  border-color: #6AAA64;
-}
-  
-.present {
-  background-color: #C9B458;
-  color: white;
-  border-color: #C9B458;
-}
-  
-.absent {
-  background-color: #787C7E;
-  color: white;
-  border-color: #787C7E;
-}
-
 .keyboard-row {
   width: 500px;
   margin: 0 auto;
@@ -128,4 +110,22 @@ hr {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.correct {
+  background-color: #6AAA64;
+  color: white;
+  border-color: #6AAA64;
+}
+  
+.present {
+  background-color: #C9B458;
+  color: white;
+  border-color: #C9B458;
+}
+  
+.absent {
+  background-color: #787C7E;
+  color: white;
+  border-color: #787C7E;
 }
