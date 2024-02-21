@@ -89,10 +89,15 @@ function processInput(e) {
     currTile.classList.remove("filled-tile");
   } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
+  } else if (e.code == "Enter" && col != width) {
+    document.getElementById("message-toast").innerText = "not enough letters";
+    document.getElementById("message-toast").style.display = "flex";
   }
 
-  // used up all guesses, gameover
+  // used up all guesses, gameover, display word
   if (!gameOver && row == height) {
+    document.getElementById("message-toast").innerText = word;
+    document.getElementById("message-toast").style.display = "flex";
     gameOver = true;
   }
 }
@@ -110,6 +115,8 @@ function update() {
 
   guess = guess.toLowerCase();
   if (!guessList.includes(guess)) {
+    document.getElementById("message-toast").innerText = "not in word list";
+    document.getElementById("message-toast").style.display = "flex";
     return;
   }
 
@@ -144,6 +151,7 @@ function update() {
 
     if (correct == width) {
       gameOver = true;
+      displayMessage(row);
     }
   }
 
@@ -178,4 +186,23 @@ function update() {
 
   row++; // move to next row, next attempt
   col = 0; // start of 0 for new row
+}
+
+// diff message if you get the answer on certain guess
+function displayMessage(row) {
+  let message = document.getElementById("message-toast");
+  if (row == 0) {
+    message.innerText = "genius";
+  } else if (row == 1) {
+    message.innerText = "magnificient";
+  } else if (row == 2) {  
+    message.innerText = "impressive";
+  } else if (row == 3) {
+    message.innerText = "splendid";
+  } else if (row == 4) {
+    message.innerText = "great";
+  } else if (row == 5) {
+    message.innerText = "phew";
+  }
+  message.style.display = "flex";
 }

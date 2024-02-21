@@ -8,6 +8,11 @@ body {
   text-align: center;
 }
 
+#header {
+  position: relative;
+  z-index: 0;
+}
+
 hr {
   color: #d3d6da;
 }
@@ -128,4 +133,24 @@ hr {
   background-color: #787C7E;
   color: white;
   border-color: #787C7E;
+}
+
+#message-toast {
+  width: 100px;
+  height: 50px;
+  margin: 50px auto;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: none;
+  background-color: black;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
