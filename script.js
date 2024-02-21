@@ -94,7 +94,6 @@ function processInput(e) {
   // used up all guesses, gameover
   if (!gameOver && row == height) {
     gameOver = true;
-    document.getElementById("answer").innerText = word;
   }
 }
 
@@ -102,7 +101,6 @@ function processInput(e) {
 function update() {
   // check if guess is a valid word
   let guess = "";
-  document.getElementById("answer").innerText = "";
 
   for (let c = 0; c < width; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
@@ -112,7 +110,6 @@ function update() {
 
   guess = guess.toLowerCase();
   if (!guessList.includes(guess)) {
-    document.getElementById("answer").innerText = "Not in word list";
     return;
   }
 
