@@ -8,20 +8,35 @@ body {
   text-align: center;
 }
 
-#header {
+#title {
   position: relative;
   z-index: 0;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-tile {
+  /* box */
+  border: 2px solid #d3d6da;
+  border-radius: 5px;
+  width: 32px;
+  height: 32px;
+  margin: 1.5px;
+
+  /* text */
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 hr {
+  width: 700px;
+  margin: auto;
   color: #d3d6da;
-}
-
-#title {
-  font-size: 1.5em;
-  font-weight: bold;
-  letter-spacing: 1px;
-  padding: 15px;
 }
 
 #board {
