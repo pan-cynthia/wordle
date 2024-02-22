@@ -48,7 +48,11 @@ hr {
   justify-content: center;
   align-items: center;
 }
-  
+
+.row {
+  display: flex;
+}
+
 .tile {
   /* box */
   border: 2px solid #d3d6da;
@@ -134,20 +138,38 @@ hr {
 
 .correct {
   background-color: #6AAA64;
-  color: white;
   border-color: #6AAA64;
+  color: white;
 }
   
 .present {
   background-color: #C9B458;
-  color: white;
   border-color: #C9B458;
+  color: white;
 }
   
 .absent {
   background-color: #787C7E;
-  color: white;
   border-color: #787C7E;
+  color: white;
+}
+
+.correct-flip {
+  --background-color: #6AAA64;
+  --border-color: #6AAA64;
+  animation: flip 0.5s ease forwards;
+}
+  
+.present-flip {
+  --background-color: #C9B458;
+  --border-color: #C9B458;
+  animation: flip 0.5s ease forwards;
+}
+  
+.absent-flip {
+  --background-color: #787C7E;
+  --border-color: #787C7E;
+  animation: flip 0.5s ease forwards;
 }
 
 #message-toast {
@@ -168,4 +190,43 @@ hr {
   color: white;
   font-size: 12px;
   font-weight: bold;
+  pointer-events: none;
+}
+
+.row > span:nth-child(2){
+  animation-delay: 0.2s;
+}
+.row > span:nth-child(3){
+  animation-delay: 0.4s;
+}
+.row > span:nth-child(4){
+  animation-delay: 0.6s;
+}
+.row > span:nth-child(5){
+  animation-delay: 0.8s;
+}
+
+/* animations */
+@keyframes flip {
+  0% {
+    transform: rotateX(0);
+    background-color: white;
+    border-color: darkgray;
+  }
+  45% {
+    transform: rotateX(90deg);
+    background-color: white;
+    border-color: darkgray;
+  }
+  55% {
+    transform: rotateX(90deg);
+    background-color: var(--background-color);
+    border-color: var(--border-color);
+  }
+  100% {
+    transform: rotateX(0);
+    background-color: var(--background-color);
+    border-color: var(--border-color);
+    color: white;
+  }
 }

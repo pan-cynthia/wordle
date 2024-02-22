@@ -15,13 +15,17 @@ window.onload = function() {
 function initialize() {
   // create board (6x5)
   for (let r = 0; r < height; ++r) {
+    let row = document.createElement("div");
     for (let c = 0; c < width; ++c) {
       // create a tile span: <span id="0-0" class="tile"></span>
       let tile = document.createElement("span");
       tile.id = r.toString() + "-" + c.toString(); // id is row#-col# in board
       tile.classList.add("tile");
-      document.getElementById("board").appendChild(tile); // adds each tile into the board div
+      row.appendChild(tile);
+      // document.getElementById("board").appendChild(tile); // adds each tile into the board div
     }
+    document.getElementById("board").appendChild(row);
+    row.classList.add("row");
   }
 
   // create keyboard
@@ -139,7 +143,7 @@ function update() {
     let letter = currTile.innerText;
 
     if (word[c] == letter) { // is it in the correct position?
-      currTile.classList.add("correct"); // change tile color to green
+      currTile.classList.add("correct-flip"); // change tile color to green
 
       let keyTile = document.getElementById("Key" + letter);
       keyTile.classList.remove("present");
@@ -164,9 +168,9 @@ function update() {
        ex: if word is APPLE and AAAAA gets entered
            the last 4 A tiles will get colored yellow when they should be grey
     */
-    if (!currTile.classList.contains("correct")) {
+    if (!currTile.classList.contains("correct-flip")) {
       if (word.includes(letter) && letterCount[letter] > 0) { // is it in the word?
-        currTile.classList.add("present"); // change tile color to yellow
+        currTile.classList.add("present-flip"); // change tile color to yellow
 
         let keyTile = document.getElementById("Key" + letter);
         if (!keyTile.classList.contains("correct")) {
@@ -175,7 +179,7 @@ function update() {
 
         letterCount[letter]--;
       } else { // not in the word
-        currTile.classList.add("absent"); // change tile color to grey
+        currTile.classList.add("absent-flip"); // change tile color to grey
         let keyTile = document.getElementById("Key" + letter);
         if (!keyTile.classList.contains("present")) {
           keyTile.classList.add("absent");
