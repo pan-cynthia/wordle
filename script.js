@@ -145,9 +145,11 @@ function update() {
     if (word[c] == letter) { // is it in the correct position?
       currTile.classList.add("correct-flip"); // change tile color to green
 
-      let keyTile = document.getElementById("Key" + letter);
-      keyTile.classList.remove("present");
-      keyTile.classList.add("correct");
+      setTimeout(() => {
+        let keyTile = document.getElementById("Key" + letter);
+        keyTile.classList.remove("present");
+        keyTile.classList.add("correct");
+      }, 1300);
 
       correct++;
       letterCount[letter]--;
@@ -172,18 +174,22 @@ function update() {
       if (word.includes(letter) && letterCount[letter] > 0) { // is it in the word?
         currTile.classList.add("present-flip"); // change tile color to yellow
 
-        let keyTile = document.getElementById("Key" + letter);
-        if (!keyTile.classList.contains("correct")) {
-          keyTile.classList.add("present");
-        }
+        setTimeout(() => {
+          let keyTile = document.getElementById("Key" + letter);
+          if (!keyTile.classList.contains("correct")) {
+            keyTile.classList.add("present");
+          }
+        }, 1300);
 
         letterCount[letter]--;
       } else { // not in the word
         currTile.classList.add("absent-flip"); // change tile color to grey
-        let keyTile = document.getElementById("Key" + letter);
-        if (!keyTile.classList.contains("present")) {
-          keyTile.classList.add("absent");
-        }
+        setTimeout(() => {
+          let keyTile = document.getElementById("Key" + letter);
+          if (!keyTile.classList.contains("present")) {
+            keyTile.classList.add("absent");
+          }
+        }, 1300);
       }
     }
   }
