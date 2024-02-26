@@ -143,6 +143,7 @@ function update() {
   for (let c = 0; c < width; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currTile.innerText;
+    currTile.style.animationDelay = (c * 0.2) + "s";
 
     if (word[c] == letter) { // is it in the correct position?
       currTile.classList.add("correct-flip"); // change tile color to green
