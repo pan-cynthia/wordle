@@ -7,6 +7,7 @@ var col = 0; // curr letter in attempt
 var gameOver = false;
 
 var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
+var guessed = [];
 
 window.onload = function() {
   initialize();
@@ -118,6 +119,11 @@ function update() {
   if (!guessList.includes(guess)) {
     displayMessage("not in word list");
     return;
+  } else if (guessed.includes(guess)) {
+    displayMessage("already guessed");
+    return;
+  } else {
+    guessed.push(guess);
   }
 
   // start processing word and updating tile colors
