@@ -22,7 +22,6 @@ function initialize() {
       tile.id = r.toString() + "-" + c.toString(); // id is row#-col# in board
       tile.classList.add("tile");
       row.appendChild(tile);
-      // document.getElementById("board").appendChild(tile); // adds each tile into the board div
     }
     document.getElementById("board").appendChild(row);
     row.classList.add("row");
@@ -94,14 +93,12 @@ function processInput(e) {
   } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
   } else if (e.code == "Enter" && col != width) {
-    document.getElementById("message-toast").innerText = "not enough letters";
-    document.getElementById("message-toast").style.display = "flex";
+    displayMessage("not enough letters");
   }
 
   // used up all guesses, gameover, display word
   if (!gameOver && row == height) {
-    document.getElementById("message-toast").innerText = word;
-    document.getElementById("message-toast").style.display = "flex";
+    displayMessage(word);
     gameOver = true;
   }
 }
@@ -119,8 +116,7 @@ function update() {
 
   guess = guess.toLowerCase();
   if (!guessList.includes(guess)) {
-    document.getElementById("message-toast").innerText = "not in word list";
-    document.getElementById("message-toast").style.display = "flex";
+    displayMessage("not in word list");
     return;
   }
 
@@ -157,7 +153,7 @@ function update() {
 
     if (correct == width) {
       gameOver = true;
-      displayMessage(row);
+      displayEndMessage(row);
     }
   }
 
@@ -198,21 +194,30 @@ function update() {
   col = 0; // start of 0 for new row
 }
 
-// diff message if you get the answer on certain guess
-function displayMessage(row) {
-  let message = document.getElementById("message-toast");
-  if (row == 0) {
-    message.innerText = "genius";
-  } else if (row == 1) {
-    message.innerText = "magnificient";
-  } else if (row == 2) {  
-    message.innerText = "impressive";
-  } else if (row == 3) {
-    message.innerText = "splendid";
-  } else if (row == 4) {
-    message.innerText = "great";
-  } else if (row == 5) {
-    message.innerText = "phew";
+function displayMessage(message) {
+  let toast = document.getElementById("message-toast");
+  toast.innerText = message;
+  toast.classList.add("show");
+  if (message != word) {
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
   }
-  message.style.display = "flex";
+} 
+
+// diff message if you get the answer on certain guess
+function displayEndMessage(row) {
+  if (row == 0) {
+    displayMessage("genius");
+  } else if (row == 1) {
+    displayMessage("magnificient");
+  } else if (row == 2) {  
+    displayMessage("impressive");
+  } else if (row == 3) {
+    displayMessage("splendid");
+  } else if (row == 4) {
+    displayMessage("great");
+  } else if (row == 5) {
+   displayMessage("phew");
+  }
 }

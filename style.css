@@ -185,12 +185,18 @@ hr {
   left: 0;
   right: 0;
   z-index: 1;
-  display: none;
+  opacity: 0;
   background-color: black;
   color: white;
   font-size: 12px;
   font-weight: bold;
   pointer-events: none;
+  transition: 0.5s transform, 1s opacity;
+}
+
+#message-toast.show {
+  opacity: 1;
+  transform: translate(0, 0);
 }
 
 .row > span:nth-child(2){
