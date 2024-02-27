@@ -94,7 +94,11 @@ function processInput(e) {
   } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
     update();
   } else if (e.code == "Enter" && col != width) {
+    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
     displayMessage("not enough letters");
+    setTimeout(() => {
+      document.getElementsByClassName("row")[row].style.animation = "";
+    }, 1300);
   }
 
   // used up all guesses, gameover, display word
@@ -116,11 +120,19 @@ function update() {
   }
 
   guess = guess.toLowerCase();
-  if (!guessList.includes(guess)) {
+  if (!guessList.includes(guess)) { 
+    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
     displayMessage("not in word list");
+    setTimeout(() => {
+      document.getElementsByClassName("row")[row].style.animation = "";
+    }, 1300);
     return;
   } else if (guessed.includes(guess)) {
+    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
     displayMessage("already guessed");
+    setTimeout(() => {
+      document.getElementsByClassName("row")[row].style.animation = "";
+    }, 1300);
     return;
   } else {
     guessed.push(guess);
@@ -208,7 +220,7 @@ function displayMessage(message) {
   if (message != word) {
     setTimeout(() => {
       toast.classList.remove("show");
-    }, 2000);
+    }, 1300);
   }
 } 
 
@@ -225,6 +237,6 @@ function displayEndMessage(row) {
   } else if (row == 4) {
     displayMessage("great");
   } else if (row == 5) {
-   displayMessage("phew");
+    displayMessage("phew");
   }
 }
