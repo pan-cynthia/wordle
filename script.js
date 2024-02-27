@@ -1,5 +1,5 @@
-var width = 5; // length of word
-var height = 6; // num of guesses
+const WIDTH = 5; // length of word
+const HEIGHT = 6; // num of guesses
 
 var row = 0; // curr attempt
 var col = 0; // curr letter in attempt
@@ -9,26 +9,27 @@ var gameOver = false;
 var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
 var guessed = [];
 
+// initialize
 window.onload = function() {
-  initialize();
+  createBoard();
+  createKeyboard();
 }
 
-function initialize() {
-  // create board (6x5)
-  for (let r = 0; r < height; ++r) {
+function createBoard() {
+  for (let r = 0; r < HEIGHT; ++r) {
     let row = document.createElement("div");
-    for (let c = 0; c < width; ++c) {
-      // create a tile span: <span id="0-0" class="tile"></span>
-      let tile = document.createElement("span");
+    for (let c = 0; c < WIDTH; ++c) {
+      let tile = document.createElement("div");
       tile.id = r.toString() + "-" + c.toString(); // id is row#-col# in board
-      tile.classList.add("tile");
+      tile.classList.add("board-tile");
       row.appendChild(tile);
     }
     document.getElementById("board").appendChild(row);
     row.classList.add("row");
   }
+}
 
-  // create keyboard
+function createKeyboard() {
   let keyboard = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
@@ -47,16 +48,15 @@ function initialize() {
 
       if (key == "ENTER") {
         keyTile.id = "Enter";
-        keyTile.classList.add("enter-key-tile");
+        keyTile.classList.add("enter-keyboard-tile");
       } else if (key == "⌫") {
         keyTile.id = "Backspace";
-        keyTile.classList.add("backspace-key-tile")
+        keyTile.classList.add("backspace-keyboard-tile")
       } else if ("A" <= key && key <= "Z") {
         keyTile.id = "Key" + key;
-        keyTile.classList.add("key-tile"); // "Key" + "A"
+        keyTile.classList.add("keyboard-tile"); // "Key" + "A"
       }
-
-      keyTile.addEventListener("click", processKey);
+      keyTile.addEventListener("click", processClick);
       keyboardRow.appendChild(keyTile);
     }
     document.body.appendChild(keyboardRow);
@@ -68,7 +68,7 @@ document.addEventListener("keyup", (e) => {
   processInput(e);
 })
 
-function processKey() {
+function processClick() {
   let e = {"code" : this.id};
   processInput(e);
 }
@@ -76,7 +76,7 @@ function processKey() {
 function processInput(e) {
   if (gameOver) return;
   if ("KeyA" <= e.code && e.code <= "KeyZ") { // check if alphabet char was entered
-    if (col < width) {
+    if (col < WIDTH) {
       let currTile = document.getElementById(row.toString() + "-" + col.toString());
       if (currTile.innerText == "") {
         currTile.innerText = e.code[3];
@@ -85,61 +85,59 @@ function processInput(e) {
       }
     }
   } else if (e.code == "Backspace") { // check if delete key was pressed
-    if (col > 0 && col <= width) {
+    if (col > 0 && col <= WIDTH) {
       col--;
     }
     let currTile = document.getElementById(row.toString() + "-" + col.toString());
     currTile.innerText = "";
     currTile.classList.remove("filled-tile");
-  } else if (e.code == "Enter" && col == width) { // check if enter key was pressed and if 5 letters were entered
-    update();
-  } else if (e.code == "Enter" && col != width) {
-    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
-    displayMessage("not enough letters");
-    setTimeout(() => {
-      document.getElementsByClassName("row")[row].style.animation = "";
-    }, 1300);
+  } else if (e.code == "Enter") {
+    submitGuess();
   }
 
   // used up all guesses, gameover, display word
-  if (!gameOver && row == height) {
+  if (!gameOver && row == HEIGHT) {
     displayMessage(word);
     gameOver = true;
   }
 }
 
-// update tile colors
-function update() {
+function submitGuess() {
+  // check if 5 letters were entered
+  if (col != WIDTH) {
+    displayMessage("not enough letters");
+    shakeTiles();
+    return;
+  }
+
   // check if guess is a valid word
   let guess = "";
-
-  for (let c = 0; c < width; ++c) {
+  for (let c = 0; c < WIDTH; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currTile.innerText;
     guess += letter;
   }
-
   guess = guess.toLowerCase();
+
   if (!guessList.includes(guess)) { 
-    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
     displayMessage("not in word list");
-    setTimeout(() => {
-      document.getElementsByClassName("row")[row].style.animation = "";
-    }, 1300);
+    shakeTiles();
     return;
   } else if (guessed.includes(guess)) {
-    document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
     displayMessage("already guessed");
-    setTimeout(() => {
-      document.getElementsByClassName("row")[row].style.animation = "";
-    }, 1300);
+    shakeTiles();
     return;
   } else {
     guessed.push(guess);
   }
 
+  updateTiles();
+}
+
+function updateTiles() {
   // start processing word and updating tile colors
   let correct = 0;
+
    // map to store char counts of word, use to change tile colors when there are dup letters
   let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
   for (let i = 0; i < word.length; ++i) {
@@ -152,7 +150,7 @@ function update() {
   }
 
   // check if letters are in correct positions first
-  for (let c = 0; c < width; ++c) {
+  for (let c = 0; c < WIDTH; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currTile.innerText;
     currTile.style.animationDelay = (c * 0.2) + "s";
@@ -170,14 +168,14 @@ function update() {
       letterCount[letter]--;
     }
 
-    if (correct == width) {
+    if (correct == WIDTH) {
       gameOver = true;
       displayEndMessage(row);
     }
   }
 
   // iterate again and mark letters that are present but in the wrong positions
-  for (let c = 0; c < width; ++c) {
+  for (let c = 0; c < WIDTH; ++c) {
     let currTile = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currTile.innerText;
 
@@ -201,7 +199,8 @@ function update() {
         currTile.classList.add("absent-flip"); // change tile color to grey
         setTimeout(() => {
           let keyTile = document.getElementById("Key" + letter);
-          if (!keyTile.classList.contains("present")) {
+          console.log(keyTile);
+          if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
             keyTile.classList.add("absent");
           }
         }, 1300);
@@ -239,4 +238,11 @@ function displayEndMessage(row) {
   } else if (row == 5) {
     displayMessage("phew");
   }
+}
+
+function shakeTiles() {
+  document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
+  setTimeout(() => {
+    document.getElementsByClassName("row")[row].style.animation = "";
+  }, 1300);
 }
