@@ -199,7 +199,6 @@ function updateTiles() {
         currTile.classList.add("absent-flip"); // change tile color to grey
         setTimeout(() => {
           let keyTile = document.getElementById("Key" + letter);
-          console.log(keyTile);
           if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
             keyTile.classList.add("absent");
           }
@@ -212,15 +211,20 @@ function updateTiles() {
   col = 0; // start of 0 for new row
 }
 
-function displayMessage(message) {
-  let toast = document.getElementById("message-toast");
+const messageContainer = document.getElementById("message-container");
+
+function displayMessage(message, duration = 1000) {
+  let toast = document.createElement("div");
   toast.innerText = message;
-  toast.classList.add("show");
-  if (message != word) {
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 1300);
-  }
+  toast.classList.add("message");
+  messageContainer.prepend(toast);
+  if (duration == null) return;
+  setTimeout(() => {
+    toast.classList.add("hide");
+    toast.addEventListener("transitionend", () => {
+      toast.remove();
+    })
+  }, duration);
 } 
 
 // diff message if you get the answer on certain guess
