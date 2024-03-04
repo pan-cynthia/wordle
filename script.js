@@ -13,6 +13,7 @@ var guessed = [];
 window.onload = function() {
   createBoard();
   createKeyboard();
+  startInteractions();
 }
 
 function createBoard() {
@@ -56,49 +57,63 @@ function createKeyboard() {
         keyTile.id = "Key" + key;
         keyTile.classList.add("keyboard-tile"); // "Key" + "A"
       }
-      keyTile.addEventListener("click", processClick);
       keyboardRow.appendChild(keyTile);
     }
-    document.body.appendChild(keyboardRow);
+    document.getElementById("keyboard").appendChild(keyboardRow);
   }
 }
 
-// listen for key presses
-document.addEventListener("keyup", (e) => {
-  processInput(e);
-})
-
-function processClick() {
-  let e = {"code" : this.id};
-  processInput(e);
+function startInteractions() {
+  document.addEventListener("click", handleMouseClick);
+  document.addEventListener("keyup", handleKeyPress);
 }
 
-function processInput(e) {
-  if (gameOver) return;
-  if ("KeyA" <= e.code && e.code <= "KeyZ") { // check if alphabet char was entered
-    if (col < WIDTH) {
-      let currTile = document.getElementById(row.toString() + "-" + col.toString());
-      if (currTile.innerText == "") {
-        currTile.innerText = e.code[3];
-        currTile.classList.add("filled-tile");
-        col++;
-      }
-    }
-  } else if (e.code == "Backspace") { // check if delete key was pressed
-    if (col > 0 && col <= WIDTH) {
-      col--;
-    }
-    let currTile = document.getElementById(row.toString() + "-" + col.toString());
-    currTile.innerText = "";
-    currTile.classList.remove("filled-tile");
-  } else if (e.code == "Enter") {
+function stopInteractions() {
+  document.removeEventListener("click", handleMouseClick);
+  document.removeEventListener("keyup", handleKeyPress);
+}
+
+function handleMouseClick(e) {
+  if (e.target.matches(".keyboard-tile")) {
+    pressKey(e.target.id[3]);
+  } else if (e.target.matches(".backspace-keyboard-tile")) {
+    deleteKey();
+  } else if (e.target.matches(".enter-keyboard-tile")) {
     submitGuess();
   }
+}
 
-  // used up all guesses, gameover, display word
-  if (!gameOver && row == HEIGHT) {
-    displayMessage(word);
-    gameOver = true;
+function handleKeyPress(e) {
+  if (e.key.match(/^[a-z]$/)) {
+    pressKey(e.key.toUpperCase());
+  } else if (e.key === "Backspace") {
+    deleteKey();
+  } else if (e.key === "Enter") {
+    submitGuess();
+  }
+}
+
+function deleteKey() {
+  if (col > 0 && col <= WIDTH) {
+    col--;
+  }
+  let currTile = document.getElementById(row.toString() + "-" + col.toString());
+  currTile.innerText = "";
+  currTile.classList.remove("filled-tile");
+}
+
+function pressKey(e) {
+  if (gameOver) {
+    stopInteractions();
+    return;
+  }
+  if (col < WIDTH) {
+    let currTile = document.getElementById(row.toString() + "-" + col.toString());
+    if (currTile.innerText == "") {
+      currTile.innerText = e;
+      currTile.classList.add("filled-tile");
+      col++;
+    }
   }
 }
 
@@ -122,16 +137,19 @@ function submitGuess() {
   if (!guessList.includes(guess)) { 
     displayMessage("not in word list");
     shakeTiles();
-    return;
   } else if (guessed.includes(guess)) {
     displayMessage("already guessed");
     shakeTiles();
-    return;
   } else {
     guessed.push(guess);
+    updateTiles();
   }
 
-  updateTiles();
+   // used up all guesses, gameover, display word
+   if (!gameOver && row == HEIGHT) {
+    displayMessage(word);
+    gameOver = true;
+  }
 }
 
 function updateTiles() {
@@ -170,7 +188,8 @@ function updateTiles() {
 
     if (correct == WIDTH) {
       gameOver = true;
-      displayEndMessage(row);
+      displayWinMessage(row);
+      stopInteractions();
     }
   }
 
@@ -211,6 +230,23 @@ function updateTiles() {
   col = 0; // start of 0 for new row
 }
 
+// diff message if you get the answer on certain guess
+function displayWinMessage(row) {
+  if (row == 0) {
+    displayMessage("genius");
+  } else if (row == 1) {
+    displayMessage("magnificient");
+  } else if (row == 2) {  
+    displayMessage("impressive");
+  } else if (row == 3) {
+    displayMessage("splendid");
+  } else if (row == 4) {
+    displayMessage("great");
+  } else if (row == 5) {
+    displayMessage("phew");
+  }
+}
+
 const messageContainer = document.getElementById("message-container");
 
 function displayMessage(message, duration = 1000) {
@@ -226,23 +262,6 @@ function displayMessage(message, duration = 1000) {
     })
   }, duration);
 } 
-
-// diff message if you get the answer on certain guess
-function displayEndMessage(row) {
-  if (row == 0) {
-    displayMessage("genius");
-  } else if (row == 1) {
-    displayMessage("magnificient");
-  } else if (row == 2) {  
-    displayMessage("impressive");
-  } else if (row == 3) {
-    displayMessage("splendid");
-  } else if (row == 4) {
-    displayMessage("great");
-  } else if (row == 5) {
-    displayMessage("phew");
-  }
-}
 
 function shakeTiles() {
   document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
