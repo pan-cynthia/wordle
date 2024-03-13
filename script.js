@@ -1,13 +1,12 @@
-const WIDTH = 5; // length of word
-const HEIGHT = 6; // num of guesses
-
-var row = 0; // curr attempt
-var col = 0; // curr letter in attempt
+const WORD_LENGTH = 5;
+const NUM_OF_GUESSES = 6;
+const board = document.querySelector("#board");
+const messageContainer = document.querySelector("#message-container");
 
 var gameOver = false;
 
 var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
-var guessed = [];
+var guessedWords = [];
 
 // initialize
 window.onload = function() {
@@ -17,16 +16,13 @@ window.onload = function() {
 }
 
 function createBoard() {
-  for (let r = 0; r < HEIGHT; ++r) {
-    let row = document.createElement("div");
-    for (let c = 0; c < WIDTH; ++c) {
+  for (let r = 0; r < NUM_OF_GUESSES; ++r) {
+    for (let c = 0; c < WORD_LENGTH; ++c) {
       let tile = document.createElement("div");
       tile.id = r.toString() + "-" + c.toString(); // id is row#-col# in board
       tile.classList.add("board-tile");
-      row.appendChild(tile);
+      board.appendChild(tile);
     }
-    document.getElementById("board").appendChild(row);
-    row.classList.add("row");
   }
 }
 
@@ -45,17 +41,17 @@ function createKeyboard() {
     for (let j = 0; j < currRow.length; ++j) {
       let keyTile = document.createElement("div");
       let key = currRow[j];
-      keyTile.innerText = key;
+      keyTile.textContent = key;
 
       if (key == "ENTER") {
-        keyTile.id = "Enter";
+        keyTile.dataset.key = "enter";
         keyTile.classList.add("enter-keyboard-tile");
       } else if (key == "⌫") {
-        keyTile.id = "Backspace";
+        keyTile.dataset.key = "backspace";
         keyTile.classList.add("backspace-keyboard-tile")
       } else if ("A" <= key && key <= "Z") {
-        keyTile.id = "Key" + key;
-        keyTile.classList.add("keyboard-tile"); // "Key" + "A"
+        keyTile.dataset.key = key;
+        keyTile.classList.add("keyboard-tile");
       }
       keyboardRow.appendChild(keyTile);
     }
@@ -75,7 +71,7 @@ function stopInteractions() {
 
 function handleMouseClick(e) {
   if (e.target.matches(".keyboard-tile")) {
-    pressKey(e.target.id[3]);
+    pressKey(e.target.dataset.key);
   } else if (e.target.matches(".backspace-keyboard-tile")) {
     deleteKey();
   } else if (e.target.matches(".enter-keyboard-tile")) {
@@ -94,144 +90,132 @@ function handleKeyPress(e) {
 }
 
 function deleteKey() {
-  if (col > 0 && col <= WIDTH) {
-    col--;
-  }
-  let currTile = document.getElementById(row.toString() + "-" + col.toString());
-  currTile.innerText = "";
-  currTile.classList.remove("filled-tile");
+  const activeTiles = getActiveTiles();
+  const lastTile = activeTiles[activeTiles.length - 1];
+  if (lastTile == null) return;
+  lastTile.textContent = "";
+  delete lastTile.dataset.state;
+  delete lastTile.dataset.letter;
 }
 
-function pressKey(e) {
-  if (gameOver) {
-    stopInteractions();
-    return;
-  }
-  if (col < WIDTH) {
-    let currTile = document.getElementById(row.toString() + "-" + col.toString());
-    if (currTile.innerText == "") {
-      currTile.innerText = e;
-      currTile.classList.add("filled-tile");
-      col++;
+function pressKey(key) {
+  const activeTiles = getActiveTiles();
+  if (activeTiles.length >= WORD_LENGTH) return;
+  const tile = board.querySelector(":not([data-letter])");
+  tile.dataset.letter = key;
+  tile.textContent = key;
+  tile.dataset.state = "active";
+}
+
+function getActiveTiles() {
+  return board.querySelectorAll('[data-state="active"]');
+}
+
+function getLetterCounts() {
+  // map to store char counts of word, use to change tile colors when there are dup letters
+  let letterCounts = {}; // APPLE -> {A:1, P:2, L:1, E:1}
+  for (let i = 0; i < word.length; ++i) {
+    let l = word[i];
+    if (letterCounts[l]) {
+      letterCounts[l]++;
+    } else {
+      letterCounts[l] = 1;
     }
   }
+  return letterCounts;
 }
 
 function submitGuess() {
+  const activeTiles = [...getActiveTiles()];
+
   // check if 5 letters were entered
-  if (col != WIDTH) {
+  if (activeTiles.length !== WORD_LENGTH) {
     displayMessage("not enough letters");
-    shakeTiles();
     return;
   }
 
-  // check if guess is a valid word
-  let guess = "";
-  for (let c = 0; c < WIDTH; ++c) {
-    let currTile = document.getElementById(row.toString() + "-" + c.toString());
-    let letter = currTile.innerText;
-    guess += letter;
-  }
-  guess = guess.toLowerCase();
+  let guess = activeTiles.reduce((word, tile) => {
+    return word + tile.dataset.letter.toLowerCase();
+  }, "")
 
   if (!guessList.includes(guess)) { 
     displayMessage("not in word list");
-    shakeTiles();
-  } else if (guessed.includes(guess)) {
+  } else if (guessedWords.includes(guess)) {
     displayMessage("already guessed");
-    shakeTiles();
   } else {
-    guessed.push(guess);
-    updateTiles();
-  }
-
-   // used up all guesses, gameover, display word
-   if (!gameOver && row == HEIGHT) {
-    displayMessage(word);
-    gameOver = true;
+    guessedWords.push(guess);
+    let letterCounts = getLetterCounts();
+    stopInteractions();
+    activeTiles.forEach((...args) => { 
+      updateCorrectTiles(...args, letterCounts);
+    });
+    activeTiles.forEach((...args) => {
+      updateTiles(...args, guess.toUpperCase(), letterCounts);
+    })
   }
 }
 
-function updateTiles() {
-  // start processing word and updating tile colors
-  let correct = 0;
+function updateCorrectTiles(tile, index, array, letterCounts) {
+  const letter = tile.dataset.letter;
+  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
+  tile.style.animationDelay = (index * 0.2) + "s";
 
-   // map to store char counts of word, use to change tile colors when there are dup letters
-  let letterCount = {}; // APPLE -> {A:1, P:2, L:1, E:1}
-  for (let i = 0; i < word.length; ++i) {
-    letter = word[i];
-    if (letterCount[letter]) {
-      letterCount[letter]++;
-    } else {
-      letterCount[letter] = 1;
-    }
+  if (word[index] === letter) {
+    tile.classList.add("correct-flip");
+
+    setTimeout(() => {
+      keyTile.classList.remove("present");
+      keyTile.classList.remove("absent");
+      keyTile.classList.add("correct");
+    }, 1300);
+
+    letterCounts[letter]--;
   }
+}
 
-  // check if letters are in correct positions first
-  for (let c = 0; c < WIDTH; ++c) {
-    let currTile = document.getElementById(row.toString() + "-" + c.toString());
-    let letter = currTile.innerText;
-    currTile.style.animationDelay = (c * 0.2) + "s";
+function updateTiles(tile, index, array, guess, letterCounts) {
+  const letter = tile.dataset.letter;
+  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
+  tile.style.animationDelay = (index * 0.2) + "s";
 
-    if (word[c] == letter) { // is it in the correct position?
-      currTile.classList.add("correct-flip"); // change tile color to green
+  if (!tile.classList.contains("correct-flip")) {
+    if (word.includes(letter) && letterCounts[letter] > 0) {
+      tile.classList.add("present-flip");
 
       setTimeout(() => {
-        let keyTile = document.getElementById("Key" + letter);
-        keyTile.classList.remove("present");
-        keyTile.classList.add("correct");
+        if (!keyTile.classList.contains("correct")) {
+          keyTile.classList.add("present");
+        }
       }, 1300);
 
-      correct++;
-      letterCount[letter]--;
-    }
-
-    if (correct == WIDTH) {
-      gameOver = true;
-      displayWinMessage(row);
-      stopInteractions();
-    }
-  }
-
-  // iterate again and mark letters that are present but in the wrong positions
-  for (let c = 0; c < WIDTH; ++c) {
-    let currTile = document.getElementById(row.toString() + "-" + c.toString());
-    let letter = currTile.innerText;
-
-    /* solves problem of duplicate letters getting incorrectly highlighted
-       ex: if word is APPLE and AAAAA gets entered
-           the last 4 A tiles will get colored yellow when they should be grey
-    */
-    if (!currTile.classList.contains("correct-flip")) {
-      if (word.includes(letter) && letterCount[letter] > 0) { // is it in the word?
-        currTile.classList.add("present-flip"); // change tile color to yellow
-
-        setTimeout(() => {
-          let keyTile = document.getElementById("Key" + letter);
-          if (!keyTile.classList.contains("correct")) {
-            keyTile.classList.add("present");
-          }
-        }, 1300);
-
-        letterCount[letter]--;
-      } else { // not in the word
-        currTile.classList.add("absent-flip"); // change tile color to grey
-        setTimeout(() => {
-          let keyTile = document.getElementById("Key" + letter);
-          if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
-            keyTile.classList.add("absent");
-          }
-        }, 1300);
-      }
+      letterCounts[letter]--;
+    } else {
+      tile.classList.add("absent-flip");
+      setTimeout(() => {
+        if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
+          keyTile.classList.add("absent");
+        }
+      }, 1300);
     }
   }
 
-  row++; // move to next row, next attempt
-  col = 0; // start of 0 for new row
+  delete tile.dataset.state;
+
+  if (index === array.length - 1) {
+    startInteractions();
+    checkGameOver(guess, array);
+  }
 }
 
-// diff message if you get the answer on certain guess
+function checkGameOver(guess, tiles) {
+  if (guess === word) {
+    displayWinMessage(tiles[0].id[0]);
+    stopInteractions();
+  }
+}
+
 function displayWinMessage(row) {
+  // diff message if you get the answer on certain guess
   if (row == 0) {
     displayMessage("genius");
   } else if (row == 1) {
@@ -247,11 +231,9 @@ function displayWinMessage(row) {
   }
 }
 
-const messageContainer = document.getElementById("message-container");
-
 function displayMessage(message, duration = 1000) {
   let toast = document.createElement("div");
-  toast.innerText = message;
+  toast.textContent = message;
   toast.classList.add("message");
   messageContainer.prepend(toast);
   if (duration == null) return;
@@ -262,10 +244,3 @@ function displayMessage(message, duration = 1000) {
     })
   }, duration);
 } 
-
-function shakeTiles() {
-  document.getElementsByClassName("row")[row].style.animation = "shake 0.2s ease forwards";
-  setTimeout(() => {
-    document.getElementsByClassName("row")[row].style.animation = "";
-  }, 1300);
-}
