@@ -219,6 +219,9 @@ function checkGameOver(guess, tiles) {
       })
     })
     stopInteractions();
+  } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
+    displayMessage(word);
+    stopInteractions();
   }
 }
 
@@ -244,6 +247,7 @@ function displayMessage(message, duration = 1000) {
   toast.textContent = message;
   toast.classList.add("message");
   messageContainer.prepend(toast);
+  if (message == word) return;
   if (duration == null) return;
   setTimeout(() => {
     toast.classList.add("hide");
