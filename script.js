@@ -131,6 +131,7 @@ function submitGuess() {
   // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
     displayMessage("not enough letters");
+    shakeTiles(activeTiles);
     return;
   }
 
@@ -140,8 +141,10 @@ function submitGuess() {
 
   if (!guessList.includes(guess)) { 
     displayMessage("not in word list");
+    shakeTiles(activeTiles);
   } else if (guessedWords.includes(guess)) {
     displayMessage("already guessed");
+    shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
@@ -210,6 +213,11 @@ function updateTiles(tile, index, array, guess, letterCounts) {
 function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(tiles[0].id[0]);
+    tiles[4].addEventListener("animationend", () => {
+      tiles.forEach(tile => {
+        tile.classList.add("dance");
+      })
+    })
     stopInteractions();
   }
 }
@@ -244,3 +252,23 @@ function displayMessage(message, duration = 1000) {
     })
   }, duration);
 } 
+
+function shakeTiles(tiles) {
+  tiles.forEach(tile => {
+    tile.classList.add("shake");
+    tile.addEventListener("animationend", () => {
+      tile.classList.remove("shake");
+    }, { once: true });
+  })
+}
+
+function danceTiles(tiles) {
+  tiles.forEach((tile, index) => {
+    setTimeout(() => {
+      tile.classList.add("dance");
+      tile.addEventListener("animationend", () => {
+        tile.classList.remove("dance");
+      }, {once: true})
+    }, (index * 500) / 5);
+  })
+}
