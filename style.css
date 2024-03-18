@@ -71,6 +71,9 @@ hr {
 
 .board-tile[data-state="active"] {
   border: 2px solid darkgray;
+}
+
+.board-tile.bounce {
   animation: bounce 200ms ease-in-out forwards;
 }
 

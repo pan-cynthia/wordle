@@ -3,8 +3,6 @@ const NUM_OF_GUESSES = 6;
 const board = document.querySelector("#board");
 const messageContainer = document.querySelector("#message-container");
 
-var gameOver = false;
-
 var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
 var guessedWords = [];
 
@@ -105,6 +103,10 @@ function pressKey(key) {
   tile.dataset.letter = key;
   tile.textContent = key;
   tile.dataset.state = "active";
+  tile.classList.add("bounce");
+  tile.addEventListener("animationend", () => {
+    tile.classList.remove("bounce");
+  }, { once: true });
 }
 
 function getActiveTiles() {
@@ -149,12 +151,8 @@ function submitGuess() {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
     stopInteractions();
-    activeTiles.forEach((...args) => { 
-      updateCorrectTiles(...args, letterCounts);
-    });
-    activeTiles.forEach((...args) => {
-      updateTiles(...args, guess.toUpperCase(), letterCounts);
-    })
+    activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
+    activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
   }
 }
 
