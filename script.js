@@ -132,7 +132,7 @@ function submitGuess() {
 
   // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
-    displayMessage("not enough letters");
+    displayMessage("Not enough letters");
     shakeTiles(activeTiles);
     return;
   }
@@ -142,10 +142,10 @@ function submitGuess() {
   }, "")
 
   if (!guessList.includes(guess)) { 
-    displayMessage("not in word list");
+    displayMessage("Not in word list");
     shakeTiles(activeTiles);
   } else if (guessedWords.includes(guess)) {
-    displayMessage("already guessed");
+    displayMessage("Already guessed");
     shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
@@ -226,17 +226,17 @@ function checkGameOver(guess, tiles) {
 function displayWinMessage(row) {
   // diff message if you get the answer on certain guess
   if (row == 0) {
-    displayMessage("genius");
+    displayMessage("Genius");
   } else if (row == 1) {
-    displayMessage("magnificient");
+    displayMessage("Magnificient");
   } else if (row == 2) {  
-    displayMessage("impressive");
+    displayMessage("Impressive");
   } else if (row == 3) {
-    displayMessage("splendid");
+    displayMessage("Splendid");
   } else if (row == 4) {
-    displayMessage("great");
+    displayMessage("Great");
   } else if (row == 5) {
-    displayMessage("phew");
+    displayMessage("Phew");
   }
 }
 

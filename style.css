@@ -200,11 +200,11 @@ hr {
 }
 
 .message {
-  width: 100px;
+  width: max-content;
   height: 50px;
   border-radius: 5px;
   margin-bottom: 10px; 
-  padding: 2px 5px;
+  padding: 2px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
