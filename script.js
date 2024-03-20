@@ -211,10 +211,10 @@ function updateTiles(tile, index, array, guess, letterCounts) {
 function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(tiles[0].id[0]);
-    tiles[4].addEventListener("animationend", () => {
-      tiles.forEach(tile => {
-        tile.classList.add("dance");
-      })
+    tiles[4].addEventListener("animationend", function(e) {
+      if (e.animationName === "flip") {
+        danceTiles(tiles);
+      }
     })
     stopInteractions();
   } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
@@ -267,10 +267,8 @@ function shakeTiles(tiles) {
 function danceTiles(tiles) {
   tiles.forEach((tile, index) => {
     setTimeout(() => {
+      tile.style.animationDelay = "0s";
       tile.classList.add("dance");
-      tile.addEventListener("animationend", () => {
-        tile.classList.remove("dance");
-      }, {once: true})
-    }, (index * 500) / 5);
+    }, (index * 500) / 5)
   })
 }
