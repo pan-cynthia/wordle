@@ -132,7 +132,7 @@ function submitGuess() {
 
   // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
-    displayMessage("Not enough letters");
+    displayMessage("Not enough letters", 0);
     shakeTiles(activeTiles);
     return;
   }
@@ -142,10 +142,10 @@ function submitGuess() {
   }, "")
 
   if (!guessList.includes(guess)) { 
-    displayMessage("Not in word list");
+    displayMessage("Not in word list", 0);
     shakeTiles(activeTiles);
   } else if (guessedWords.includes(guess)) {
-    displayMessage("Already guessed");
+    displayMessage("Already guessed", 0);
     shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
@@ -218,7 +218,7 @@ function checkGameOver(guess, tiles) {
     })
     stopInteractions();
   } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
-    displayMessage(word);
+    displayMessage(word, 1300);
     stopInteractions();
   }
 }
@@ -226,33 +226,34 @@ function checkGameOver(guess, tiles) {
 function displayWinMessage(row) {
   // diff message if you get the answer on certain guess
   if (row == 0) {
-    displayMessage("Genius");
+    displayMessage("Genius", 1300);
   } else if (row == 1) {
-    displayMessage("Magnificient");
+    displayMessage("Magnificient", 1300);
   } else if (row == 2) {  
-    displayMessage("Impressive");
+    displayMessage("Impressive", 1300);
   } else if (row == 3) {
-    displayMessage("Splendid");
+    displayMessage("Splendid", 1300);
   } else if (row == 4) {
-    displayMessage("Great");
+    displayMessage("Great", 1300);
   } else if (row == 5) {
-    displayMessage("Phew");
+    displayMessage("Phew", 1300);
   }
 }
 
-function displayMessage(message, duration = 1000) {
+function displayMessage(message, duration) {
   let toast = document.createElement("div");
   toast.textContent = message;
-  toast.classList.add("message");
-  messageContainer.prepend(toast);
+  setTimeout(() => {
+    toast.classList.add("message");
+    messageContainer.prepend(toast);
+  }, duration)
   if (message == word) return;
-  if (duration == null) return;
   setTimeout(() => {
     toast.classList.add("hide");
     toast.addEventListener("transitionend", () => {
       toast.remove();
     })
-  }, duration);
+  }, duration + 1000);
 } 
 
 function shakeTiles(tiles) {
