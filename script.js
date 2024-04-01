@@ -3,11 +3,13 @@ const NUM_OF_GUESSES = 6;
 const board = document.querySelector("#board");
 const messageContainer = document.querySelector("#message-container");
 
-var word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
+var offsetFromDate = new Date(2024, 0, 1);
+var dayOffset = (Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24;
+var word = wordList[Math.floor(dayOffset)].toUpperCase();
 var guessedWords = [];
 
 // initialize
-window.onload = function() {
+window.onload = function() {  
   createBoard();
   createKeyboard();
   startInteractions();
