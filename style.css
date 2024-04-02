@@ -8,6 +8,14 @@ body {
   text-align: center;
 }
 
+:root {
+  --correct: #6AAA64;
+  --present: #C9B458;
+  --absent: #787C7E;
+  --empty: #d3d6da;
+  --filled: #a9a9a9;
+}
+
 #title {
   position: relative;
   z-index: 0;
@@ -19,7 +27,7 @@ body {
 
 .title-tile {
   /* box */
-  border: 2px solid #d3d6da;
+  border: 2px solid var(--empty);
   border-radius: 5px;
   width: 32px;
   height: 32px;
@@ -36,7 +44,7 @@ body {
 hr {
   width: 700px;
   margin: auto;
-  color: #d3d6da;
+  color: var(--empty);
 }
 
 #board {
@@ -55,7 +63,7 @@ hr {
 
 .board-tile {
   /* box */
-  border: 2px solid #d3d6da;
+  border: 2px solid var(--empty);
   width: 60px;
   height: 60px;
   margin: 2.5px;
@@ -70,7 +78,7 @@ hr {
 }
 
 .board-tile[data-state="active"] {
-  border: 2px solid darkgray;
+  border: 2px solid var(--filled);
 }
 
 .board-tile.bounce {
@@ -82,8 +90,8 @@ hr {
 }
 
 .board-tile.dance {
-  background-color: #6AAA64;
-  border-color: #6AAA64;
+  background-color: var(--correct);
+  border-color: var(--correct);
   color: white;
   animation: dance 500ms ease-in-out;
 }
@@ -99,8 +107,8 @@ hr {
 
 .keyboard-tile {
   /* box */
-  background-color: #d3d6da;
-  border: 1px solid lightgray;
+  background-color: var(--empty);
+  border: 1px solid var(--empty);
   border-radius: 5px;
   width: 42px;
   height: 60px;
@@ -117,8 +125,8 @@ hr {
 
 .enter-keyboard-tile {
   /* box */
-  background-color: #d3d6da;
-  border: 1px solid lightgray;
+  background-color: var(--empty);
+  border: 1px solid var(--empty);
   border-radius: 5px;
   width: 65px;
   height: 60px;
@@ -135,8 +143,8 @@ hr {
 
 .backspace-keyboard-tile {
   /* box */
-  background-color: #d3d6da;
-  border: 1px solid lightgray;
+  background-color: var(--empty);
+  border: 1px solid var(--empty);
   border-radius: 5px;
   width: 65px;
   height: 60px;
@@ -152,40 +160,40 @@ hr {
 }
 
 .correct {
-  background-color: #6AAA64;
-  border-color: #6AAA64;
+  background-color: var(--correct);
+  border-color: var(--correct);
   color: white;
 }
   
 .present {
-  background-color: #C9B458;
-  border-color: #C9B458;
+  background-color: var(--present);
+  border-color: var(--present);
   color: white;
 }
   
 .absent {
-  background-color: #787C7E;
-  border-color: #787C7E;
+  background-color: var(--absent);
+  border-color: var(--absent);
   color: white;
 }
 
 .correct-flip {
-  --background-color: #6AAA64;
-  --border-color: #6AAA64;
+  --background-color: var(--correct);
+  --border-color: var(--correct);
   animation: flip 0.5s ease forwards;
 }
   
 .present-flip {
-  --background-color: #C9B458;
-  --border-color: #C9B458;
+  --background-color: var(--present);
+  --border-color: var(--present);
   animation: flip 0.5s ease forwards;
 }
   
 .absent-flip {
-  --background-color: #787C7E;
-  --border-color: #787C7E;
+  --background-color: var(--absent);
+  --border-color: var(--absent);
   animation: flip 0.5s ease forwards;
-}
+} 
 
 #message-container {
   position: absolute;
@@ -230,12 +238,12 @@ hr {
   0% {
     transform: rotateX(0);
     background-color: white;
-    border-color: darkgray;
+    border-color: var(--filled);
   }
   45% {
     transform: rotateX(90deg);
     background-color: white;
-    border-color: darkgray;
+    border-color: var(--filled);
   }
   55% {
     transform: rotateX(90deg);
