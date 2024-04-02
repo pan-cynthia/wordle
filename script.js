@@ -4,8 +4,8 @@ const board = document.querySelector("#board");
 const messageContainer = document.querySelector("#message-container");
 
 var offsetFromDate = new Date(2024, 0, 1);
-var dayOffset = (Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24;
-var word = wordList[Math.floor(dayOffset)].toUpperCase();
+var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
+var word = wordList[dayOffset].toUpperCase();
 var guessedWords = [];
 
 // initialize
@@ -155,18 +155,18 @@ function submitGuess() {
     stopInteractions();
     activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
     activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
-  }
+  } 
 }
 
 function updateCorrectTiles(tile, index, array, letterCounts) {
   const letter = tile.dataset.letter;
   const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
-  tile.style.animationDelay = (index * 0.2) + "s";
 
   if (word[index] === letter) {
     tile.classList.add("correct-flip");
 
     setTimeout(() => {
+      tile.classList.add("correct");
       keyTile.classList.remove("present");
       keyTile.classList.remove("absent");
       keyTile.classList.add("correct");
@@ -186,6 +186,7 @@ function updateTiles(tile, index, array, guess, letterCounts) {
       tile.classList.add("present-flip");
 
       setTimeout(() => {
+        tile.classList.add("present");
         if (!keyTile.classList.contains("correct")) {
           keyTile.classList.add("present");
         }
@@ -194,7 +195,9 @@ function updateTiles(tile, index, array, guess, letterCounts) {
       letterCounts[letter]--;
     } else {
       tile.classList.add("absent-flip");
+    
       setTimeout(() => {
+        tile.classList.add("absent");
         if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
           keyTile.classList.add("absent");
         }
@@ -205,6 +208,16 @@ function updateTiles(tile, index, array, guess, letterCounts) {
   delete tile.dataset.state;
 
   if (index === array.length - 1) {
+    array[4].addEventListener("animationend", function(e) {
+      if (e.animationName === "flip") {
+        // remove flip after animation has finished
+        array.forEach(tile => {
+          tile.classList.remove("correct-flip");
+          tile.classList.remove("present-flip");
+          tile.classList.remove("absent-flip");
+        })
+      }
+    })
     startInteractions();
     checkGameOver(guess, array);
   }
