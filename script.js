@@ -105,10 +105,6 @@ function pressKey(key) {
   tile.dataset.letter = key;
   tile.textContent = key;
   tile.dataset.state = "active";
-  tile.classList.add("bounce");
-  tile.addEventListener("animationend", () => {
-    tile.classList.remove("bounce");
-  }, { once: true });
 }
 
 function getActiveTiles() {
@@ -135,7 +131,6 @@ function submitGuess() {
   // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
     displayMessage("Not enough letters", 0);
-    shakeTiles(activeTiles);
     return;
   }
 
@@ -145,10 +140,8 @@ function submitGuess() {
 
   if (!guessList.includes(guess)) { 
     displayMessage("Not in word list", 0);
-    shakeTiles(activeTiles);
   } else if (guessedWords.includes(guess)) {
     displayMessage("Already guessed", 0);
-    shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
@@ -164,15 +157,10 @@ function updateTiles(tiles, guess, letterCounts) {
     const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
     
     if (word[c] === letter) {
-      tiles[c].classList.add("correct-flip");
-
-      setTimeout(() => {
-        tiles[c].classList.add("correct");
-        keyTile.classList.remove("present");
-        keyTile.classList.remove("absent");
-        keyTile.classList.add("correct");
-      }, 1300);
-
+      tiles[c].classList.add("correct");
+      keyTile.classList.remove("present");
+      keyTile.classList.remove("absent");
+      keyTile.classList.add("correct");
       letterCounts[letter]--;
     }
   }
@@ -181,46 +169,23 @@ function updateTiles(tiles, guess, letterCounts) {
   for (let c = 0; c < WORD_LENGTH; ++c) {
     let letter = tiles[c].dataset.letter;
     const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
-    tiles[c].style.animationDelay = (c * 0.2) + "s";
 
-    if (!tiles[c].classList.contains("correct-flip")) {
+    if (!tiles[c].classList.contains("correct")) {
       if (word.includes(letter) && letterCounts[letter] > 0) {
-        tiles[c].classList.add("present-flip");
-
-        setTimeout(() => {
-          tiles[c].classList.add("present");
-          if (!keyTile.classList.contains("correct")) {
-            keyTile.classList.add("present");
-          }
-        }, 1300);
-
+        tiles[c].classList.add("present");
+        if (!keyTile.classList.contains("correct")) {
+          keyTile.classList.add("present");
+        }
         letterCounts[letter]--;
       } else {
-        tiles[c].classList.add("absent-flip");
-
-        setTimeout(() => {
-          tiles[c].classList.add("absent");
-          if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
-            keyTile.classList.add("absent");
-          }
-        }, 1300);
+        tiles[c].classList.add("absent");
+        if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
+          keyTile.classList.add("absent");
+        }
       }
     }
-
     delete tiles[c].dataset.state;
   }
-
-  // remove flip after animation has finished
-  tiles[4].addEventListener("animationend", function(e) {
-    if (e.animationName === "flip") {
-      tiles.forEach(tile => {
-        tile.classList.remove("correct-flip");
-        tile.classList.remove("present-flip");
-        tile.classList.remove("absent-flip");
-      })
-    }
-  })
-
   checkGameOver(guess, tiles);
   startInteractions();
 }
@@ -228,11 +193,6 @@ function updateTiles(tiles, guess, letterCounts) {
 function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(tiles[0].id[0]);
-    tiles[4].addEventListener("animationend", function(e) {
-      if (e.animationName === "flip") {
-        danceTiles(tiles);
-      }
-    })
     stopInteractions();
   } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
@@ -272,21 +232,3 @@ function displayMessage(message, duration) {
     })
   }, duration + 1000);
 } 
-
-function shakeTiles(tiles) {
-  tiles.forEach(tile => {
-    tile.classList.add("shake");
-    tile.addEventListener("animationend", () => {
-      tile.classList.remove("shake");
-    }, { once: true });
-  })
-}
-
-function danceTiles(tiles) {
-  tiles.forEach((tile, index) => {
-    setTimeout(() => {
-      tile.style.animationDelay = "0s";
-      tile.classList.add("dance");
-    }, (index * 500) / 5)
-  })
-}
