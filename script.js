@@ -153,74 +153,76 @@ function submitGuess() {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
     stopInteractions();
-    activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
-    activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
+    updateTiles(activeTiles, guess.toUpperCase(), letterCounts);
   } 
 }
 
-function updateCorrectTiles(tile, index, array, letterCounts) {
-  const letter = tile.dataset.letter;
-  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
-
-  if (word[index] === letter) {
-    tile.classList.add("correct-flip");
-
-    setTimeout(() => {
-      tile.classList.add("correct");
-      keyTile.classList.remove("present");
-      keyTile.classList.remove("absent");
-      keyTile.classList.add("correct");
-    }, 1300);
-
-    letterCounts[letter]--;
-  }
-}
-
-function updateTiles(tile, index, array, guess, letterCounts) {
-  const letter = tile.dataset.letter;
-  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
-  tile.style.animationDelay = (index * 0.2) + "s";
-
-  if (!tile.classList.contains("correct-flip")) {
-    if (word.includes(letter) && letterCounts[letter] > 0) {
-      tile.classList.add("present-flip");
+function updateTiles(tiles, guess, letterCounts) {
+  // check if letters are in correct positions first
+  for (let c = 0; c < WORD_LENGTH; ++c) {
+    let letter = tiles[c].dataset.letter;
+    const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
+    
+    if (word[c] === letter) {
+      tiles[c].classList.add("correct-flip");
 
       setTimeout(() => {
-        tile.classList.add("present");
-        if (!keyTile.classList.contains("correct")) {
-          keyTile.classList.add("present");
-        }
+        tiles[c].classList.add("correct");
+        keyTile.classList.remove("present");
+        keyTile.classList.remove("absent");
+        keyTile.classList.add("correct");
       }, 1300);
 
       letterCounts[letter]--;
-    } else {
-      tile.classList.add("absent-flip");
-    
-      setTimeout(() => {
-        tile.classList.add("absent");
-        if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
-          keyTile.classList.add("absent");
-        }
-      }, 1300);
     }
   }
 
-  delete tile.dataset.state;
+  // iterate again and mark letters that are present/absent
+  for (let c = 0; c < WORD_LENGTH; ++c) {
+    let letter = tiles[c].dataset.letter;
+    const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
+    tiles[c].style.animationDelay = (c * 0.2) + "s";
 
-  if (index === array.length - 1) {
-    array[4].addEventListener("animationend", function(e) {
-      if (e.animationName === "flip") {
-        // remove flip after animation has finished
-        array.forEach(tile => {
-          tile.classList.remove("correct-flip");
-          tile.classList.remove("present-flip");
-          tile.classList.remove("absent-flip");
-        })
+    if (!tiles[c].classList.contains("correct-flip")) {
+      if (word.includes(letter) && letterCounts[letter] > 0) {
+        tiles[c].classList.add("present-flip");
+
+        setTimeout(() => {
+          tiles[c].classList.add("present");
+          if (!keyTile.classList.contains("correct")) {
+            keyTile.classList.add("present");
+          }
+        }, 1300);
+
+        letterCounts[letter]--;
+      } else {
+        tiles[c].classList.add("absent-flip");
+
+        setTimeout(() => {
+          tiles[c].classList.add("absent");
+          if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
+            keyTile.classList.add("absent");
+          }
+        }, 1300);
       }
-    })
-    startInteractions();
-    checkGameOver(guess, array);
+    }
+
+    delete tiles[c].dataset.state;
   }
+
+  // remove flip after animation has finished
+  tiles[4].addEventListener("animationend", function(e) {
+    if (e.animationName === "flip") {
+      tiles.forEach(tile => {
+        tile.classList.remove("correct-flip");
+        tile.classList.remove("present-flip");
+        tile.classList.remove("absent-flip");
+      })
+    }
+  })
+
+  checkGameOver(guess, tiles);
+  startInteractions();
 }
 
 function checkGameOver(guess, tiles) {
