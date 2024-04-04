@@ -135,6 +135,7 @@ function submitGuess() {
   // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
     displayMessage("Not enough letters", 0);
+    shakeTiles(activeTiles);
     return;
   }
 
@@ -144,8 +145,10 @@ function submitGuess() {
 
   if (!guessList.includes(guess)) { 
     displayMessage("Not in word list", 0);
+    shakeTiles(activeTiles);
   } else if (guessedWords.includes(guess)) {
     displayMessage("Already guessed", 0);
+    shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
@@ -264,3 +267,12 @@ function displayMessage(message, duration) {
     })
   }, duration + 1000);
 } 
+
+function shakeTiles(tiles) {
+  tiles.forEach(tile => {
+    tile.classList.add("shake");
+    tile.addEventListener("animationend", () => {
+      tile.classList.remove("shake");
+    }, { once: true });
+  })
+}
