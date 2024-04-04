@@ -282,4 +282,9 @@ function danceTiles(tiles) {
       tile.classList.add("dance");
     }, (index * 500) / 5)
   })
+  tiles[4].addEventListener("animationend", () => {
+    tiles.forEach(tile => {
+      tile.classList.remove("dance");
+    })
+  })
 }
