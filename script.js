@@ -228,6 +228,7 @@ function updateKeyboardTiles(tile) {
 function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(tiles[0].id[0]);
+    danceTiles(tiles);
     stopInteractions();
   } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
@@ -274,5 +275,13 @@ function shakeTiles(tiles) {
     tile.addEventListener("animationend", () => {
       tile.classList.remove("shake");
     }, { once: true });
+  })
+}
+
+function danceTiles(tiles) {
+  tiles.forEach((tile, index) => {
+    setTimeout(() => {
+      tile.classList.add("dance");
+    }, (index * 500) / 5)
   })
 }

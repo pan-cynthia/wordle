@@ -94,6 +94,13 @@ hr {
   animation: shake 200ms ease-in-out forwards;
 }
 
+.board-tile.dance {
+  background-color: var(--correct);
+  border-color: var(--correct);
+  color: white;
+  animation: dance 500ms ease-in-out;
+}
+
 .keyboard-row {
   width: 500px;
   margin: 0 auto;
@@ -240,5 +247,26 @@ hr {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+@keyframes dance {
+  20% {
+    transform: translateY(-50%);
+  }
+  40% {
+    transform: translateY(5%);
+  }
+  60% {
+    transform: translateY(-25%);
+  }
+  80% {
+    transform: translateY(2.5%);
+  }
+  90% {
+    transform: translateY(-5%);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
