@@ -105,6 +105,10 @@ function pressKey(key) {
   tile.dataset.letter = key;
   tile.textContent = key;
   tile.dataset.state = "active";
+  tile.classList.add("bounce");
+  tile.addEventListener("animationend", () => {
+    tile.classList.remove("bounce");
+  }, { once: true });
 }
 
 function getActiveTiles() {
