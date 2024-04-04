@@ -146,48 +146,76 @@ function submitGuess() {
     guessedWords.push(guess);
     let letterCounts = getLetterCounts();
     stopInteractions();
-    updateTiles(activeTiles, guess.toUpperCase(), letterCounts);
+    activeTiles.forEach((tile, index) => {
+      setTimeout(() => {
+        tile.classList.add("flip");
+      }, (index * 250) / 2)
+    })
+    activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
+    activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
   } 
 }
 
-function updateTiles(tiles, guess, letterCounts) {
-  // check if letters are in correct positions first
-  for (let c = 0; c < WORD_LENGTH; ++c) {
-    let letter = tiles[c].dataset.letter;
-    const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
-    
-    if (word[c] === letter) {
-      tiles[c].classList.add("correct");
-      keyTile.classList.remove("present");
-      keyTile.classList.remove("absent");
-      keyTile.classList.add("correct");
+function updateCorrectTiles(tile, index, array, letterCounts) {
+  const letter = tile.dataset.letter;
+  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
+
+  tile.addEventListener("transitionend", () => {
+    tile.classList.remove("flip");
+    if (word[index] === letter) {
+      tile.classList.add("correct");
+      keyTile.dataset.state = "correct";  
       letterCounts[letter]--;
     }
-  }
+  })
+}
 
-  // iterate again and mark letters that are present/absent
-  for (let c = 0; c < WORD_LENGTH; ++c) {
-    let letter = tiles[c].dataset.letter;
-    const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
+function updateTiles(tile, index, array, guess, letterCounts) {
+  const letter = tile.dataset.letter;
+  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
 
-    if (!tiles[c].classList.contains("correct")) {
+  tile.addEventListener("transitionend", () => {
+    tile.classList.remove("flip");
+    if (!tile.classList.contains("correct")) {
       if (word.includes(letter) && letterCounts[letter] > 0) {
-        tiles[c].classList.add("present");
-        if (!keyTile.classList.contains("correct")) {
-          keyTile.classList.add("present");
-        }
+        tile.classList.add("present");
+        keyTile.dataset.state = "present";
         letterCounts[letter]--;
       } else {
-        tiles[c].classList.add("absent");
-        if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
-          keyTile.classList.add("absent");
-        }
+        tile.classList.add("absent");
+        keyTile.dataset.state = "absent";
       }
     }
-    delete tiles[c].dataset.state;
+    delete tile.dataset.state;
+
+    if (index === array.length - 1) {
+      tile.addEventListener("transitionend", () => {
+        startInteractions();
+        checkGameOver(guess, array);
+        // update keyboard tiles after board tiles have finished flipping
+        array.forEach(tile => { updateKeyboardTiles(tile) });
+      }, {once: true})
+    }
+  }, {once: true})
+}
+
+function updateKeyboardTiles(tile) {
+  const letter = tile.dataset.letter;
+  const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`)
+
+  if (keyTile.dataset.state == "correct") {
+    keyTile.classList.remove("present");
+    keyTile.classList.remove("absent");
+    keyTile.classList.add("correct");
+  } else if (keyTile.dataset.state == "present") {
+    if (!keyTile.classList.contains("correct")) {
+      keyTile.classList.add("present");
+    }
+  } else if (keyTile.dataset.state == "absent") {
+    if (!keyTile.classList.contains("present") && !keyTile.classList.contains("correct")) {
+      keyTile.classList.add("absent");
+    }
   }
-  checkGameOver(guess, tiles);
-  startInteractions();
 }
 
 function checkGameOver(guess, tiles) {
