@@ -37,6 +37,7 @@ function initLocalStorage() {
 }
 
 function resetGameState() {
+  localStorage.removeItem("dayOffset");
   localStorage.removeItem("guessedWords");
   localStorage.removeItem("currRowIndex");
   localStorage.removeItem("status");
