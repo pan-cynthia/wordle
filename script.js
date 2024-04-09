@@ -8,6 +8,7 @@ var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
 var guessedWords = [];
 var currRowIndex = 0;
+var gameStatus = "IN_PROGRESS";
 
 // initialize
 window.onload = function() {
@@ -28,11 +29,17 @@ function initLocalStorage() {
   if (!storedCurrRowIndex) {
     localStorage.setItem("currRowIndex", currRowIndex);
   }
+
+  var storedGameStatus = localStorage.getItem("status");
+  if (!storedGameStatus) {
+    localStorage.setItem("status", gameStatus);
+  }
 }
 
 function saveGameState() {
   localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
   localStorage.setItem("currRowIndex", currRowIndex);
+  localStorage.setItem("status", gameStatus);
 
   let board = document.getElementById("board");
   localStorage.setItem("boardState", board.innerHTML);
@@ -44,6 +51,7 @@ function saveGameState() {
 function loadGameState() {
   guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
   currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
+  gameStatus = localStorage.getItem("gameStatus") || gameStatus;
 
   let boardState = localStorage.getItem("boardState");
   if (boardState) document.getElementById("board").innerHTML = boardState;
@@ -268,9 +276,11 @@ function checkGameOver(guess, tiles) {
     displayWinMessage(currRowIndex);
     danceTiles(tiles);
     stopInteractions();
+    gameStatus = "WIN";
   } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
     stopInteractions();
+    gameStatus = "LOSE";
     currRowIndex++;
   } else {
     currRowIndex++;
