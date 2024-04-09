@@ -36,6 +36,14 @@ function initLocalStorage() {
   }
 }
 
+function resetGameState() {
+  localStorage.removeItem("guessedWords");
+  localStorage.removeItem("currRowIndex");
+  localStorage.removeItem("status");
+  localStorage.removeItem("boardState");
+  localStorage.removeItem("keyboardState");
+}
+
 function saveGameState() {
   localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
   localStorage.setItem("currRowIndex", currRowIndex);
@@ -49,6 +57,13 @@ function saveGameState() {
 }
 
 function loadGameState() {
+  var storedDayOffset = localStorage.getItem("dayOffset");
+  // new word/day, don't load previous game state, reset
+  if (dayOffset != storedDayOffset) {
+    resetGameState();
+    return;
+  }
+  
   guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
   currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
   gameStatus = localStorage.getItem("gameStatus") || gameStatus;
