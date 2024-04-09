@@ -229,8 +229,9 @@ function updateTiles(tile, index, array, guess, letterCounts) {
         // update keyboard tiles after board tiles have finished flipping
         array.forEach(tile => { updateKeyboardTiles(tile) });
         startInteractions();
-        checkGameOver(guess, array);
-        saveGameState();
+        const promise = new Promise(() => {checkGameOver(guess, array)});
+        // save game state after checkGameOver is fully finished
+        promise.then(saveGameState());
       }, {once: true})
     }
   }, {once: true})
