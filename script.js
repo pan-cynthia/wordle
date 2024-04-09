@@ -7,6 +7,7 @@ var offsetFromDate = new Date(2024, 0, 1);
 var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
 var guessedWords = [];
+var currRowIndex = 0;
 
 // initialize
 window.onload = function() {
@@ -22,10 +23,16 @@ function initLocalStorage() {
   if (!storedDayOffset) {
     localStorage.setItem("dayOffset", dayOffset);
   }
+
+  var storedCurrRowIndex = localStorage.getItem("currRowIndex");
+  if (!storedCurrRowIndex) {
+    localStorage.setItem("currRowIndex", currRowIndex);
+  }
 }
 
 function saveGameState() {
   localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
+  localStorage.setItem("currRowIndex", currRowIndex);
 
   let board = document.getElementById("board");
   localStorage.setItem("boardState", board.innerHTML);
@@ -36,6 +43,7 @@ function saveGameState() {
 
 function loadGameState() {
   guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
+  currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
 
   let boardState = localStorage.getItem("boardState");
   if (boardState) document.getElementById("board").innerHTML = boardState;
@@ -48,7 +56,6 @@ function createBoard() {
   for (let r = 0; r < NUM_OF_GUESSES; ++r) {
     for (let c = 0; c < WORD_LENGTH; ++c) {
       let tile = document.createElement("div");
-      tile.id = r.toString() + "-" + c.toString(); // id is row#-col# in board
       tile.classList.add("board-tile");
       board.appendChild(tile);
     }
@@ -258,12 +265,15 @@ function updateKeyboardTiles(tile) {
 
 function checkGameOver(guess, tiles) {
   if (guess === word) {
-    displayWinMessage(tiles[0].id[0]);
+    displayWinMessage(currRowIndex);
     danceTiles(tiles);
     stopInteractions();
-  } else if (tiles[0].id[0] == (NUM_OF_GUESSES - 1)) {
+  } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
     stopInteractions();
+    currRowIndex++;
+  } else {
+    currRowIndex++;
   }
 }
 
