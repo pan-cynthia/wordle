@@ -9,10 +9,39 @@ var word = wordList[dayOffset].toUpperCase();
 var guessedWords = [];
 
 // initialize
-window.onload = function() {  
+window.onload = function() {
+  initLocalStorage();
   createBoard();
   createKeyboard();
+  loadGameState();
   startInteractions();
+}
+
+function initLocalStorage() {
+  var storedDayOffset = localStorage.getItem("dayOffset");
+  if (!storedDayOffset) {
+    localStorage.setItem("dayOffset", dayOffset);
+  }
+}
+
+function saveGameState() {
+  localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
+
+  let board = document.getElementById("board");
+  localStorage.setItem("boardState", board.innerHTML);
+
+  let keyboard = document.getElementById("keyboard");
+  localStorage.setItem("keyboardState", keyboard.innerHTML);
+}
+
+function loadGameState() {
+  guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
+
+  let boardState = localStorage.getItem("boardState");
+  if (boardState) document.getElementById("board").innerHTML = boardState;
+
+  let keyboardState = localStorage.getItem("keyboardState");
+  if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
 }
 
 function createBoard() {
@@ -201,6 +230,7 @@ function updateTiles(tile, index, array, guess, letterCounts) {
         array.forEach(tile => { updateKeyboardTiles(tile) });
         startInteractions();
         checkGameOver(guess, array);
+        saveGameState();
       }, {once: true})
     }
   }, {once: true})
