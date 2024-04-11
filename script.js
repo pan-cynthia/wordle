@@ -3,6 +3,11 @@ const NUM_OF_GUESSES = 6;
 const board = document.querySelector("#board");
 const messageContainer = document.querySelector("#message-container");
 
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const help_btn = document.querySelector("#help-btn");
+const close_btn = document.querySelector(".close-btn");
+
 var offsetFromDate = new Date(2024, 0, 1);
 var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
@@ -122,11 +127,31 @@ function createKeyboard() {
 function startInteractions() {
   document.addEventListener("click", handleMouseClick);
   document.addEventListener("keyup", handleKeyPress);
+  help_btn.addEventListener("click", openModal);
+  close_btn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", closeModal);
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  })
 }
 
 function stopInteractions() {
   document.removeEventListener("click", handleMouseClick);
   document.removeEventListener("keyup", handleKeyPress);
+}
+
+function openModal() {
+  modal.classList.remove("hidden");
+  overlay.classList.remove("hidden");
+  stopInteractions();
+}
+
+function closeModal() {
+  modal.classList.add("hidden");
+  overlay.classList.add("hidden");
+  startInteractions();
 }
 
 function handleMouseClick(e) {

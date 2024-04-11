@@ -20,15 +20,23 @@
       <span class="title-tile absent">E</span>
     </div>
     <div id="menu-right">
-      <button>
+      <button id="help-btn">
           <span class="material-symbols-outlined">help</span>
       </button>
-      <button>
+      <button id="stats-btn">
         <span class="material-symbols-outlined">leaderboard</span>
       </button>
     </div>
   </div>
   <hr size="1">
+  <div class="modal hidden">
+    <div class="modal-content">
+      <button class="close-btn">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  </div>
+  <div class="overlay hidden"></div>
   <div id="message-container"></div>
   <div id="board"></div>
   <div id="keyboard"></div>
