@@ -72,7 +72,7 @@ function loadGameState() {
   
   guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
   currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
-  gameStatus = localStorage.getItem("gameStatus") || gameStatus;
+  gameStatus = localStorage.getItem("status") || gameStatus;
 
   let boardState = localStorage.getItem("boardState");
   if (boardState) document.getElementById("board").innerHTML = boardState;
@@ -125,6 +125,7 @@ function createKeyboard() {
 }
 
 function startInteractions() {
+  if (gameStatus === "WIN" || gameStatus === "LOSE") return;
   document.addEventListener("click", handleMouseClick);
   document.addEventListener("keyup", handleKeyPress);
   help_btn.addEventListener("click", openModal);
