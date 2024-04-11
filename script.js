@@ -22,6 +22,7 @@ window.onload = function() {
   createKeyboard();
   loadGameState();
   startInteractions();
+  modalInteractions();
 }
 
 function initLocalStorage() {
@@ -128,6 +129,14 @@ function startInteractions() {
   if (gameStatus === "WIN" || gameStatus === "LOSE") return;
   document.addEventListener("click", handleMouseClick);
   document.addEventListener("keyup", handleKeyPress);
+}
+
+function stopInteractions() {
+  document.removeEventListener("click", handleMouseClick);
+  document.removeEventListener("keyup", handleKeyPress);
+}
+
+function modalInteractions() {
   help_btn.addEventListener("click", openModal);
   close_btn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
@@ -136,11 +145,6 @@ function startInteractions() {
       closeModal();
     }
   })
-}
-
-function stopInteractions() {
-  document.removeEventListener("click", handleMouseClick);
-  document.removeEventListener("keyup", handleKeyPress);
 }
 
 function openModal() {
