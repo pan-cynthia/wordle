@@ -31,9 +31,58 @@
   <hr size="1">
   <div class="modal hidden">
     <div class="modal-content">
+      <h2>How To Play</h2>
       <button class="close-btn">
         <span class="material-symbols-outlined">close</span>
       </button>
+      <h3>Guess the Wordle in 6 tries.</h3>
+      <ul class="instructions">
+        <li>Each guess must be a valid 5-letter word.</li>
+        <li>The color of the tiles will change to show how close your guess was to the word.</li>
+      </ul>
+      <section class="examples">
+        <h3>Examples</h3>
+        <div class="example">
+          <div class="example-tile-container">
+            <div class="example-tile correct">L</div>
+            <div class="example-tile">U</div>
+            <div class="example-tile">C</div>
+            <div class="example-tile">K</div>
+            <div class="example-tile">Y</div>
+          </div>
+          <p>
+            <strong>L</strong>
+            is in the word and in the correct spot.
+          </p>
+        </div>
+        <div class="example">
+          <div class="example-tile-container">
+            <div class="example-tile">P</div>
+            <div class="example-tile present">I</div>
+            <div class="example-tile">Z</div>
+            <div class="example-tile">Z</div>
+            <div class="example-tile">A</div>
+          </div>
+          <p>
+            <strong>I</strong>
+            is in the word but in the wrong spot.
+          </p>
+        </div>
+        <div class="example">
+          <div class="example-tile-container">
+            <div class="example-tile">Z</div>
+            <div class="example-tile">E</div>
+            <div class="example-tile">B</div>
+            <div class="example-tile absent">R</div>
+            <div class="example-tile">A</div>
+          </div>
+          <p>
+            <strong>R</strong>
+            is in not the word in any spot.
+          </p>
+        </div>
+      </section>
+      <p>A new puzzle is released daily at midnight.</p>
     </div>
   </div>
   <div class="overlay hidden"></div>
