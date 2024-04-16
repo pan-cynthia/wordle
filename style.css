@@ -13,6 +13,7 @@ body {
   --absent: #787C7E;
   --empty: #d3d6da;
   --filled: #a9a9a9;
+  --hover: #e1e6eb;
 }
 
 #header {
@@ -36,9 +37,15 @@ body {
   background-color: transparent;
   outline: none;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
   overflow: hidden;
-  margin: 5px;
+  margin: 2px;
+  padding: 5px;
+}
+
+#menu-right > button:hover {
+  background-color: var(--hover);
 }
 
 #menu-right > button > span {
@@ -294,6 +301,12 @@ ul > li {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.keyboard-tile:hover, .enter-keyboard-tile:hover, .backspace-keyboard-tile:hover {
+  background-color: var(--hover);
+  border-color: var(--hover);
+  color: black;
 }
 
 .correct {
