@@ -29,10 +29,10 @@
     </div>
   </div>
   <hr size="1">
-  <div class="modal hidden">
-    <div class="modal-content">
-      <h2>How To Play</h2>
-      <button class="close-btn">
+  <div class="modal hidden" id="instructions-modal">
+    <div id="instructions-modal-content">
+      <h2 style="letter-spacing: 0px;">How To Play</h2>
+      <button class="close-btn" id="instructions-close-btn">
         <span class="material-symbols-outlined">close</span>
       </button>
       <h3>Guess the Wordle in 6 tries.</h3>
@@ -83,6 +83,77 @@
         </div>
       </section>
       <p>A new puzzle is released daily at midnight.</p>
+    </div>
+  </div>
+  <div class="modal hidden" id="stats-modal">
+    <div id="stats-modal-content">
+      <h2>STATISTICS</h2>
+      <button class="close-btn" id="stats-close-btn">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <section id="stats">
+        <div class="stats-container">
+          <p class="stats-num" id="played">17</p>
+          <p>Played</p>
+        </div>
+        <div class="stats-container">
+          <p class="stats-num" id="win-percentage">94</p>
+          <p>Win %</p>
+        </div>
+        <div class="stats-container">
+          <p class="stats-num" id="current-streak">12</p>
+          <p>Current Streak</p>
+        </div>
+        <div class="stats-container">
+          <p class="stats-num" id="max-streak">12</p>
+          <p>Max Streak</p>
+        </div>
+      </section>
+      <section id="guess-distribution">
+        <h2>GUESS DISTRIBUTION</h2>
+        <table id="distribution">
+          <tr>
+            <td class="guess-num">1</td>
+            <td class="guess-bar">
+              <div id="guess-1">0</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="guess-num">2</td>
+            <td class="guess-bar">
+              <div id="guess-2">3</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="guess-num">3</td>
+            <td class="guess-bar">
+              <div id="guess-3">10</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="guess-num">4</td>
+            <td class="guess-bar">
+              <div id="guess-4">23</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="guess-num">5</td>
+            <td class="guess-bar">
+              <div id="guess-5">7</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="guess-num">6</td>
+            <td class="guess-bar">
+              <div id="guess-6">4</div>
+            </td>
+          </tr>
+        </table>
+      </section>
+      <div id="timer">
+        <h2>NEXT WORDLE</h2>
+        <p id="countdown">12:00:23</p>
+      </div>
     </div>
   </div>
   <div class="overlay hidden"></div>
