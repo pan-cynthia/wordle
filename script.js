@@ -150,6 +150,31 @@ function updateStatsModal() {
   document.querySelector("#win-percentage").textContent = winPercent;
   document.querySelector("#current-streak").textContent = currStreak;
   document.querySelector("#max-streak").textContent = maxStreak;
+
+  // get highest guess count, width of bars will be relative to this count
+  const maxGuessCount = Math.max(genius, magnificient, impressive, splendid, great, phew);
+
+  document.querySelector("#guess-1").style.width = (genius == 0) ? 4 + "%" : (100 * genius / maxGuessCount) + "%";
+  document.querySelector("#guess-1").textContent = genius;
+
+  document.querySelector("#guess-2").style.width = (magnificient == 0) ? 4 + "%" : (100 * magnificient / maxGuessCount) + "%";
+  document.querySelector("#guess-2").textContent = magnificient;
+
+  document.querySelector("#guess-3").style.width = (impressive == 0) ? 4 + "%" : (100 * impressive / maxGuessCount) + "%";
+  document.querySelector("#guess-3").textContent = impressive;
+
+  document.querySelector("#guess-4").style.width = (splendid == 0) ? 4 + "%" : (100 * splendid / maxGuessCount) + "%";
+  document.querySelector("#guess-4").textContent = splendid;
+
+  document.querySelector("#guess-5").style.width = (great == 0) ? 4 + "%" : (100 * great / maxGuessCount) + "%";
+  document.querySelector("#guess-5").textContent = great;
+
+  document.querySelector("#guess-6").style.width = (phew == 0) ? 4 + "%" : (100 * phew / maxGuessCount) + "%";
+  document.querySelector("#guess-6").textContent = phew;
+
+  if (gameStatus === "WIN") {
+    document.querySelector("#guess-" + (Number(currRowIndex) + 1)).style.backgroundColor = "var(--correct)";
+  }
 }
 
 function createBoard() {

@@ -199,7 +199,7 @@ ul > li {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .stats-container {
@@ -215,15 +215,26 @@ ul > li {
 }
 
 #guess-distribution {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  width: 100%;
+  text-align: center;
+}
+
+#distribution {
+  width: 100%;
+}
+
+.guess-container {
+  width: 100%;
+  text-align: end;
+  color: white;
+  padding: 2px;
 }
 
 .guess-bar {
-  width: 100%;
-  text-align: end;
   background-color: var(--absent);
-  color: white;
-  padding: 6px;
+  padding: 3px 10px 3px 0px;
+  font-weight: 500;
 }
 
 #countdown {
