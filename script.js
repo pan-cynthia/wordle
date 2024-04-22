@@ -21,6 +21,12 @@ var gamesPlayed = 0;
 var numOfWins = 0;
 var currStreak = 0;
 var maxStreak = 0;
+var genius = 0;
+var magnificient = 0;
+var impressive = 0;
+var splendid = 0;
+var great = 0;
+var phew = 0;
 
 // initialize
 window.onload = function() {
@@ -53,6 +59,24 @@ function initLocalStorage() {
 
   const storedMaxStreak = localStorage.getItem("maxStreak", maxStreak);
   if (!storedMaxStreak) localStorage.setItem("maxStreak", maxStreak);
+
+  const storedGenius = localStorage.getItem("genius");
+  if (!storedGenius) localStorage.setItem("genius", genius);
+
+  const storedMagnificient = localStorage.getItem("magnficient");
+  if (!storedMagnificient) localStorage.setItem("magnificient", magnificient);
+
+  const storedImpressive = localStorage.getItem("impressive");
+  if (!storedImpressive) localStorage.setItem("impressive", impressive);
+
+  const storedSplendid = localStorage.getItem("splendid");
+  if (!storedSplendid) localStorage.setItem("splendid", splendid);
+
+  const storedGreat = localStorage.getItem("great");
+  if (!storedGreat) localStorage.setItem("great", great);
+
+  const storedPhew = localStorage.getItem("phew");
+  if (!storedPhew) localStorage.setItem("phew", phew);
 }
 
 function resetGameState() {
@@ -79,6 +103,13 @@ function saveGameState() {
   localStorage.setItem("numOfWins", numOfWins);
   localStorage.setItem("currStreak", currStreak);
   localStorage.setItem("maxStreak", maxStreak);
+
+  localStorage.setItem("genius", genius);
+  localStorage.setItem("magnificient", magnificient);
+  localStorage.setItem("impressive", impressive);
+  localStorage.setItem("splendid", splendid);
+  localStorage.setItem("great", great);
+  localStorage.setItem("phew", phew);
 }
 
 function loadGameState() {
@@ -103,6 +134,14 @@ function loadGameState() {
   numOfWins = localStorage.getItem("numOfWins") || numOfWins;
   currStreak = localStorage.getItem("currStreak") || currStreak;
   maxStreak = localStorage.getItem("maxStreak") || maxStreak;
+
+  genius = localStorage.getItem("genius") || genius;
+  magnificient = localStorage.getItem("magnficient") || magnificient;
+  impressive = localStorage.getItem("impressive") || impressive;
+  splendid = localStorage.getItem("splendid") || splendid;
+  great = localStorage.getItem("great") || great;
+  phew = localStorage.getItem("phew") || phew;
+
 }
 
 function updateStatsModal() {
@@ -390,16 +429,22 @@ function displayWinMessage(row) {
   // diff message if you get the answer on certain guess
   if (row == 0) {
     displayMessage("Genius");
+    genius++;
   } else if (row == 1) {
     displayMessage("Magnificient");
+    magnificient++;
   } else if (row == 2) {  
     displayMessage("Impressive");
+    impressive++;
   } else if (row == 3) {
     displayMessage("Splendid");
+    splendid++;
   } else if (row == 4) {
     displayMessage("Great");
+    great++;
   } else if (row == 5) {
     displayMessage("Phew");
+    phew++;
   }
 }
 
