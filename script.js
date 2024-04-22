@@ -17,6 +17,10 @@ var word = wordList[dayOffset].toUpperCase();
 var guessedWords = [];
 var currRowIndex = 0;
 var gameStatus = "IN_PROGRESS";
+var gamesPlayed = 0;
+var numOfWins = 0;
+var currStreak = 0;
+var maxStreak = 0;
 
 // initialize
 window.onload = function() {
@@ -29,20 +33,26 @@ window.onload = function() {
 }
 
 function initLocalStorage() {
-  var storedDayOffset = localStorage.getItem("dayOffset");
-  if (!storedDayOffset) {
-    localStorage.setItem("dayOffset", dayOffset);
-  }
+  const storedDayOffset = localStorage.getItem("dayOffset");
+  if (!storedDayOffset) localStorage.setItem("dayOffset", dayOffset);
 
-  var storedCurrRowIndex = localStorage.getItem("currRowIndex");
-  if (!storedCurrRowIndex) {
-    localStorage.setItem("currRowIndex", currRowIndex);
-  }
+  const storedCurrRowIndex = localStorage.getItem("currRowIndex");
+  if (!storedCurrRowIndex) localStorage.setItem("currRowIndex", currRowIndex);
 
-  var storedGameStatus = localStorage.getItem("status");
-  if (!storedGameStatus) {
-    localStorage.setItem("status", gameStatus);
-  }
+  const storedGameStatus = localStorage.getItem("status");
+  if (!storedGameStatus) localStorage.setItem("status", gameStatus);
+
+  const storedGamesPlayed = localStorage.getItem("gamesPlayed");
+  if (!storedGamesPlayed) localStorage.setItem("gamesPlayed", gamesPlayed);
+
+  const storedNumOfWins = localStorage.getItem("numOfWins", numOfWins);
+  if (!storedNumOfWins) localStorage.setItem("numOfWins", numOfWins);
+
+  const storedCurrStreak = localStorage.getItem("currStreak", currStreak);
+  if (!storedCurrStreak) localStorage.setItem("currStreak", currStreak);
+
+  const storedMaxStreak = localStorage.getItem("maxStreak", maxStreak);
+  if (!storedMaxStreak) localStorage.setItem("maxStreak", maxStreak);
 }
 
 function resetGameState() {
@@ -64,6 +74,11 @@ function saveGameState() {
 
   let keyboard = document.getElementById("keyboard");
   localStorage.setItem("keyboardState", keyboard.innerHTML);
+
+  localStorage.setItem("gamesPlayed", gamesPlayed);
+  localStorage.setItem("numOfWins", numOfWins);
+  localStorage.setItem("currStreak", currStreak);
+  localStorage.setItem("maxStreak", maxStreak);
 }
 
 function loadGameState() {
@@ -83,6 +98,19 @@ function loadGameState() {
 
   let keyboardState = localStorage.getItem("keyboardState");
   if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
+
+  gamesPlayed = localStorage.getItem("gamesPlayed") || gamesPlayed;
+  numOfWins = localStorage.getItem("numOfWins") || numOfWins;
+  currStreak = localStorage.getItem("currStreak") || currStreak;
+  maxStreak = localStorage.getItem("maxStreak") || maxStreak;
+}
+
+function updateStatsModal() {
+  document.querySelector("#played").textContent = gamesPlayed;
+  const winPercent = (numOfWins == 0 && gamesPlayed == 0) ? 0 : Math.floor((numOfWins/gamesPlayed) * 100);
+  document.querySelector("#win-percentage").textContent = winPercent;
+  document.querySelector("#current-streak").textContent = currStreak;
+  document.querySelector("#max-streak").textContent = maxStreak;
 }
 
 function createBoard() {
@@ -147,6 +175,7 @@ function modalInteractions() {
     closeModal(instructions_modal);
   });
   stats_btn.addEventListener("click", function() {
+    updateStatsModal();
     openModal(stats_modal);
   });
   stats_close_btn.addEventListener("click", function() {
@@ -341,11 +370,17 @@ function checkGameOver(guess, tiles) {
     danceTiles(tiles);
     stopInteractions();
     gameStatus = "WIN";
+    currStreak++;
+    numOfWins++;
+    gamesPlayed++;
+  if (currStreak > maxStreak) maxStreak = currStreak;
   } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
     stopInteractions();
     gameStatus = "LOSE";
     currRowIndex++;
+    currStreak = 0;
+    gamesPlayed++;
   } else {
     currRowIndex++;
   }
