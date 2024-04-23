@@ -36,6 +36,28 @@ window.onload = function() {
   loadGameState();
   startInteractions();
   modalInteractions();
+  startTimer();
+}
+
+function startTimer() {
+  let start = new Date;
+  start.setHours(24, 0, 0, 0);
+  setInterval(function() {
+    let diff = start - Date.now(); // time elapsed since start
+    let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    document.querySelector("#countdown").textContent = hours + ":" + minutes + ":" + seconds;
+
+    if (diff <= 0) {
+      // reset timer once it reaches 0
+      start = Date.now() + 1000;
+    }
+  }, 1000)
 }
 
 function initLocalStorage() {

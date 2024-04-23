@@ -113,8 +113,9 @@ hr {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   position: relative;
-  padding: 32px;
+  padding: 10px 32px;
 }
 
 .overlay {
@@ -146,8 +147,7 @@ hr {
 
 h2 {
   font-size: 28px;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   letter-spacing: 2px;
 }
 
@@ -199,7 +199,7 @@ ul > li {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 40px;
 }
 
 .stats-container {
@@ -214,14 +214,19 @@ ul > li {
   font-size: 65px;
 }
 
-#guess-distribution {
-  margin-bottom: 15px;
-  width: 100%;
-  text-align: center;
+.guess-num {
+  padding-right: 5px;
+  font-weight: 600;
 }
 
-#distribution {
+#guess-distribution {
   width: 100%;
+  text-align: center;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .guess-container {
