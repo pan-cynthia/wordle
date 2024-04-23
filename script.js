@@ -48,7 +48,7 @@ function startTimer() {
       // reset timer once it reaches 0
       start = start.getTime() + (24 * 60 * 60 * 1000);
       diff = start - Date.now();
-   }
+    }
     let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     let seconds = Math.floor((diff % (1000 * 60)) / 1000);
@@ -470,8 +470,12 @@ function checkGameOver(guess, tiles) {
   if (currStreak > maxStreak) maxStreak = currStreak;
   } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
-    stopInteractions();
     gameStatus = "LOSE";
+    setTimeout(() => {
+      updateStatsModal();
+      openModal(stats_modal);
+    }, 1500)
+    stopInteractions();
     currRowIndex++;
     currStreak = 0;
     gamesPlayed++;
