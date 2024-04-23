@@ -52,7 +52,7 @@ function startTimer() {
     minutes = minutes < 10 ? "0" + minutes : minutes;
     seconds = seconds < 10 ? "0" + seconds : seconds;
     document.querySelector("#countdown").textContent = hours + ":" + minutes + ":" + seconds;
-
+    
     if (diff <= 0) {
       // reset timer once it reaches 0
       start = Date.now() + 1000;
@@ -164,6 +164,10 @@ function loadGameState() {
   great = localStorage.getItem("great") || great;
   phew = localStorage.getItem("phew") || phew;
 
+  if (gameStatus === "WIN" || gameStatus === "LOSE") {
+    updateStatsModal();
+    openModal(stats_modal);
+  }
 }
 
 function updateStatsModal() {
@@ -454,6 +458,10 @@ function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(currRowIndex);
     danceTiles(tiles);
+    setTimeout(() => {
+      updateStatsModal();
+      openModal(stats_modal);
+    }, 1500)
     stopInteractions();
     gameStatus = "WIN";
     currStreak++;
