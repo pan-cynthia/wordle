@@ -85,7 +85,7 @@ function initLocalStorage() {
   const storedGenius = localStorage.getItem("genius");
   if (!storedGenius) localStorage.setItem("genius", genius);
 
-  const storedMagnificient = localStorage.getItem("magnficient");
+  const storedMagnificient = localStorage.getItem("magnificient");
   if (!storedMagnificient) localStorage.setItem("magnificient", magnificient);
 
   const storedImpressive = localStorage.getItem("impressive");
@@ -158,7 +158,7 @@ function loadGameState() {
   maxStreak = localStorage.getItem("maxStreak") || maxStreak;
 
   genius = localStorage.getItem("genius") || genius;
-  magnificient = localStorage.getItem("magnficient") || magnificient;
+  magnificient = localStorage.getItem("magnificient") || magnificient;
   impressive = localStorage.getItem("impressive") || impressive;
   splendid = localStorage.getItem("splendid") || splendid;
   great = localStorage.getItem("great") || great;
