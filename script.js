@@ -14,20 +14,23 @@ const stats_close_btn = document.querySelector("#stats-close-btn");
 var offsetFromDate = new Date(2024, 0, 1);
 var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
-word = "HATCH";
 var guessedWords = [];
 var currRowIndex = 0;
 var gameStatus = "IN_PROGRESS";
-var gamesPlayed = 0;
-var numOfWins = 0;
-var currStreak = 0;
-var maxStreak = 0;
-var genius = 0;
-var magnificient = 0;
-var impressive = 0;
-var splendid = 0;
-var great = 0;
-var phew = 0;
+var stats = {
+  gamesPlayed: 0,
+  numOfWins: 0,
+  currStreak: 0,
+  maxStreak: 0
+};
+var winMessageCounts = {
+  genius: 0,
+  magnificient: 0,
+  impressive: 0,
+  splendid: 0,
+  great: 0,
+  phew: 0
+};  
 
 // initialize
 window.onload = function() {
@@ -62,44 +65,11 @@ function startTimer() {
 }
 
 function initLocalStorage() {
-  const storedDayOffset = localStorage.getItem("dayOffset");
-  if (!storedDayOffset) localStorage.setItem("dayOffset", dayOffset);
-
-  const storedCurrRowIndex = localStorage.getItem("currRowIndex");
-  if (!storedCurrRowIndex) localStorage.setItem("currRowIndex", currRowIndex);
-
-  const storedGameStatus = localStorage.getItem("status");
-  if (!storedGameStatus) localStorage.setItem("status", gameStatus);
-
-  const storedGamesPlayed = localStorage.getItem("gamesPlayed");
-  if (!storedGamesPlayed) localStorage.setItem("gamesPlayed", gamesPlayed);
-
-  const storedNumOfWins = localStorage.getItem("numOfWins", numOfWins);
-  if (!storedNumOfWins) localStorage.setItem("numOfWins", numOfWins);
-
-  const storedCurrStreak = localStorage.getItem("currStreak", currStreak);
-  if (!storedCurrStreak) localStorage.setItem("currStreak", currStreak);
-
-  const storedMaxStreak = localStorage.getItem("maxStreak", maxStreak);
-  if (!storedMaxStreak) localStorage.setItem("maxStreak", maxStreak);
-
-  const storedGenius = localStorage.getItem("genius");
-  if (!storedGenius) localStorage.setItem("genius", genius);
-
-  const storedMagnificient = localStorage.getItem("magnificient");
-  if (!storedMagnificient) localStorage.setItem("magnificient", magnificient);
-
-  const storedImpressive = localStorage.getItem("impressive");
-  if (!storedImpressive) localStorage.setItem("impressive", impressive);
-
-  const storedSplendid = localStorage.getItem("splendid");
-  if (!storedSplendid) localStorage.setItem("splendid", splendid);
-
-  const storedGreat = localStorage.getItem("great");
-  if (!storedGreat) localStorage.setItem("great", great);
-
-  const storedPhew = localStorage.getItem("phew");
-  if (!storedPhew) localStorage.setItem("phew", phew);
+  if (!localStorage.getItem("dayOffset")) localStorage.setItem("dayOffset", dayOffset);
+  if (!localStorage.getItem("currRowIndex")) localStorage.setItem("currRowIndex", currRowIndex);
+  if (!localStorage.getItem("status")) localStorage.setItem("status", gameStatus);
+  if (!localStorage.getItem("stats")) localStorage.setItem("stats", JSON.stringify(stats));
+  if (!localStorage.getItem("winMessageCounts")) localStorage.setItem("winMessageCounts", JSON.stringify(winMessageCounts));
 }
 
 function resetGameState() {
@@ -122,17 +92,8 @@ function saveGameState() {
   let keyboard = document.getElementById("keyboard");
   localStorage.setItem("keyboardState", keyboard.innerHTML);
 
-  localStorage.setItem("gamesPlayed", gamesPlayed);
-  localStorage.setItem("numOfWins", numOfWins);
-  localStorage.setItem("currStreak", currStreak);
-  localStorage.setItem("maxStreak", maxStreak);
-
-  localStorage.setItem("genius", genius);
-  localStorage.setItem("magnificient", magnificient);
-  localStorage.setItem("impressive", impressive);
-  localStorage.setItem("splendid", splendid);
-  localStorage.setItem("great", great);
-  localStorage.setItem("phew", phew);
+  localStorage.setItem("stats", JSON.stringify(stats));
+  localStorage.setItem("winMessageCounts", JSON.stringify(winMessageCounts));
 }
 
 function loadGameState() {
@@ -153,17 +114,8 @@ function loadGameState() {
   let keyboardState = localStorage.getItem("keyboardState");
   if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
 
-  gamesPlayed = localStorage.getItem("gamesPlayed") || gamesPlayed;
-  numOfWins = localStorage.getItem("numOfWins") || numOfWins;
-  currStreak = localStorage.getItem("currStreak") || currStreak;
-  maxStreak = localStorage.getItem("maxStreak") || maxStreak;
-
-  genius = localStorage.getItem("genius") || genius;
-  magnificient = localStorage.getItem("magnificient") || magnificient;
-  impressive = localStorage.getItem("impressive") || impressive;
-  splendid = localStorage.getItem("splendid") || splendid;
-  great = localStorage.getItem("great") || great;
-  phew = localStorage.getItem("phew") || phew;
+  stats = JSON.parse(localStorage.getItem("stats")) || stats;
+  winMessageCounts = JSON.parse(localStorage.getItem("winMessageCounts")) || winMessageCounts;
 
   if (gameStatus === "WIN" || gameStatus === "LOSE") {
     updateStatsModal();
@@ -172,32 +124,32 @@ function loadGameState() {
 }
 
 function updateStatsModal() {
-  document.querySelector("#played").textContent = gamesPlayed;
-  const winPercent = (numOfWins == 0 && gamesPlayed == 0) ? 0 : Math.floor((numOfWins/gamesPlayed) * 100);
+  document.querySelector("#played").textContent = stats["gamesPlayed"];
+  const winPercent = (stats["numOfWins"] == 0 && stats["gamesPlayed"] == 0) ? 0 : Math.floor((stats["numOfWins"]/stats["gamesPlayed"]) * 100);
   document.querySelector("#win-percentage").textContent = winPercent;
-  document.querySelector("#current-streak").textContent = currStreak;
-  document.querySelector("#max-streak").textContent = maxStreak;
+  document.querySelector("#current-streak").textContent = stats["currStreak"];
+  document.querySelector("#max-streak").textContent = stats["maxStreak"];
 
   // get highest guess count, width of bars will be relative to this count
-  const maxGuessCount = Math.max(genius, magnificient, impressive, splendid, great, phew);
+  const maxGuessCount = Math.max(...Object.values(winMessageCounts));
 
-  document.querySelector("#guess-1").style.width = (genius == 0) ? 4 + "%" : (100 * genius / maxGuessCount) + "%";
-  document.querySelector("#guess-1").textContent = genius;
+  document.querySelector("#guess-1").style.width = (winMessageCounts["genius"] == 0) ? 4 + "%" : (100 * winMessageCounts["genius"] / maxGuessCount) + "%";
+  document.querySelector("#guess-1").textContent = winMessageCounts["genius"];
 
-  document.querySelector("#guess-2").style.width = (magnificient == 0) ? 4 + "%" : (100 * magnificient / maxGuessCount) + "%";
-  document.querySelector("#guess-2").textContent = magnificient;
+  document.querySelector("#guess-2").style.width = (winMessageCounts["magnificient"] == 0) ? 4 + "%" : (100 * winMessageCounts["magnificient"] / maxGuessCount) + "%";
+  document.querySelector("#guess-2").textContent = winMessageCounts["magnificient"];
 
-  document.querySelector("#guess-3").style.width = (impressive == 0) ? 4 + "%" : (100 * impressive / maxGuessCount) + "%";
-  document.querySelector("#guess-3").textContent = impressive;
+  document.querySelector("#guess-3").style.width = (winMessageCounts["impressive"] == 0) ? 4 + "%" : (100 * winMessageCounts["impressive"] / maxGuessCount) + "%";
+  document.querySelector("#guess-3").textContent = winMessageCounts["impressive"];
 
-  document.querySelector("#guess-4").style.width = (splendid == 0) ? 4 + "%" : (100 * splendid / maxGuessCount) + "%";
-  document.querySelector("#guess-4").textContent = splendid;
+  document.querySelector("#guess-4").style.width = (winMessageCounts["splendid"] == 0) ? 4 + "%" : (100 * winMessageCounts["splendid"] / maxGuessCount) + "%";
+  document.querySelector("#guess-4").textContent = winMessageCounts["splendid"];
 
-  document.querySelector("#guess-5").style.width = (great == 0) ? 4 + "%" : (100 * great / maxGuessCount) + "%";
-  document.querySelector("#guess-5").textContent = great;
+  document.querySelector("#guess-5").style.width = (winMessageCounts["great"] == 0) ? 4 + "%" : (100 * winMessageCounts["great"] / maxGuessCount) + "%";
+  document.querySelector("#guess-5").textContent = winMessageCounts["great"];
 
-  document.querySelector("#guess-6").style.width = (phew == 0) ? 4 + "%" : (100 * phew / maxGuessCount) + "%";
-  document.querySelector("#guess-6").textContent = phew;
+  document.querySelector("#guess-6").style.width = (winMessageCounts["phew"] == 0) ? 4 + "%" : (100 * winMessageCounts["phew"] / maxGuessCount) + "%";
+  document.querySelector("#guess-6").textContent = winMessageCounts["phew"];
 
   if (gameStatus === "WIN") {
     document.querySelector("#guess-" + (Number(currRowIndex) + 1)).style.backgroundColor = "var(--correct)";
@@ -467,9 +419,9 @@ function checkGameOver(guess, tiles) {
     }, 1500)
     stopInteractions();
     gameStatus = "WIN";
-    currStreak++;
-    numOfWins++;
-    gamesPlayed++;
+    stats["currStreak"]++;
+    stats["numOfWins"]++;
+    stats["gamesPlayed"]++;
   if (currStreak > maxStreak) maxStreak = currStreak;
   } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
@@ -479,9 +431,9 @@ function checkGameOver(guess, tiles) {
       openModal(stats_modal);
     }, 1500)
     stopInteractions();
-    currRowIndex++;
-    currStreak = 0;
-    gamesPlayed++;
+    stats["currRowIndex"]++;
+    stats["currStreak"] = 0;
+    stats["gamesPlayed"]++;
   } else {
     currRowIndex++;
   }
@@ -491,22 +443,22 @@ function displayWinMessage(row) {
   // diff message if you get the answer on certain guess
   if (row == 0) {
     displayMessage("Genius");
-    genius++;
+    winMessageCounts["genius"]++;
   } else if (row == 1) {
     displayMessage("Magnificient");
-    magnificient++;
+    winMessageCounts["magnificient"]++;
   } else if (row == 2) {  
     displayMessage("Impressive");
-    impressive++;
+    winMessageCounts["impressive"]++;
   } else if (row == 3) {
     displayMessage("Splendid");
-    splendid++;
+    winMessageCounts["splendid"]++;
   } else if (row == 4) {
     displayMessage("Great");
-    great++;
+    winMessageCounts["great"]++;
   } else if (row == 5) {
     displayMessage("Phew");
-    phew++;
+    winMessageCounts["phew"]++;
   }
 }
 
