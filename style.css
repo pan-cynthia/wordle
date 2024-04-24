@@ -87,6 +87,8 @@ hr {
 .modal {
   display: flex;
   position: absolute;
+  justify-content: center;
+  align-items: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -114,7 +116,7 @@ hr {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 32px;
+  padding: 32px;
 }
 
 .overlay {
@@ -145,8 +147,9 @@ hr {
 }
 
 h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
+  font-size: 23px;
+  margin-bottom: 13px;
+  letter-spacing: 2px;
 }
 
 h3 {
@@ -179,24 +182,24 @@ ul > li {
 }
 
 .example-tile {
-    /* box */
-    border: 2px solid var(--empty);
-    width: 32px;
-    height: 32px;
-    margin: 2.5px;
-  
-    /* text */
-    font-size: 20px;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  /* box */
+  border: 2px solid var(--empty);
+  width: 32px;
+  height: 32px;
+  margin: 2.5px;
+
+  /* text */
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #stats {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 90%;
   margin-bottom: 40px;
 }
 
@@ -209,7 +212,7 @@ ul > li {
 }
 
 .stats-num {
-  font-size: 65px;
+  font-size: 60px;
 }
 
 .guess-num {
@@ -218,7 +221,7 @@ ul > li {
 }
 
 #guess-distribution {
-  width: 100%;
+  width: 90%;
   text-align: center;
   margin-bottom: 40px;
   display: flex;
@@ -241,7 +244,7 @@ ul > li {
 }
 
 #countdown {
-  font-size: 50px;
+  font-size: 40px;
   letter-spacing: 2px;
   text-align: center;
 }
