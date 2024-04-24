@@ -14,6 +14,7 @@ const stats_close_btn = document.querySelector("#stats-close-btn");
 var offsetFromDate = new Date(2024, 0, 1);
 var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
+word = "HATCH";
 var guessedWords = [];
 var currRowIndex = 0;
 var gameStatus = "IN_PROGRESS";
@@ -378,13 +379,13 @@ function submitGuess() {
     shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
-    let letterCounts = getLetterCounts();
     stopInteractions();
     activeTiles.forEach((tile, index) => {
       setTimeout(() => {
         tile.classList.add("flip");
       }, (index * 250) / 2)
     })
+    let letterCounts = getLetterCounts();
     activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
     activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
   } 
@@ -394,14 +395,16 @@ function updateCorrectTiles(tile, index, array, letterCounts) {
   const letter = tile.dataset.letter;
   const keyTile = keyboard.querySelector(`[data-key="${letter}"i]`);
 
-  tile.addEventListener("transitionend", () => {
-    tile.classList.remove("flip");
-    if (word[index] === letter) {
-      tile.classList.add("correct");
-      keyTile.dataset.state = "correct";  
-      letterCounts[letter]--;
-    }
-  })
+  if (word[index] === letter) {
+    letterCounts[letter]--;
+    tile.addEventListener("transitionend", () => {
+      tile.classList.remove("flip");
+      if (word[index] === letter) {
+        tile.classList.add("correct");
+        keyTile.dataset.state = "correct";  
+      }
+    }, {once: true})
+  }
 }
 
 function updateTiles(tile, index, array, guess, letterCounts) {
