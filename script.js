@@ -203,11 +203,13 @@ function startInteractions() {
   if (gameStatus === "WIN" || gameStatus === "LOSE") return;
   document.addEventListener("click", handleMouseClick);
   document.addEventListener("keyup", handleKeyPress);
+  document.querySelector("#keyboard").style.pointerEvents = "auto";
 }
 
 function stopInteractions() {
   document.removeEventListener("click", handleMouseClick);
   document.removeEventListener("keyup", handleKeyPress);
+  document.querySelector("#keyboard").style.pointerEvents = "none";
 }
 
 function modalInteractions() {

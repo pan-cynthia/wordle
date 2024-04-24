@@ -370,6 +370,7 @@ ul > li {
   background-color: var(--hover);
   border-color: var(--hover);
   color: black;
+  cursor: pointer;
 }
 
 .correct {
