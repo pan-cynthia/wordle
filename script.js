@@ -33,15 +33,35 @@ var winMessageCounts = {
 };  
 
 // initialize
-window.onload = function() {
+document.addEventListener("DOMContentLoaded", () => {
   initLocalStorage();
   createBoard();
   createKeyboard();
   startTimer();
   setInterval(startTimer, 1000);
+  refreshAt(24, 0, 0);
   loadGameState();
   startInteractions();
   modalInteractions();
+})
+
+function refreshAt(hour, minute, second) {
+  var now = new Date();
+  var then = new Date();
+
+  if(now.getHours() > hour ||
+    (now.getHours() == hour && now.getMinutes() > minute) ||
+    now.getHours() == hour && now.getMinutes() == minute && now.getSeconds() >= second) {
+      then.setDate(now.getDate() + 1);
+  }
+  then.setHours(hour);
+  then.setMinutes(minute);
+  then.setSeconds(second);
+
+  var timeout = (then.getTime() - now.getTime());
+  setTimeout(function() {
+    window.location.reload(true);
+  }, timeout);
 }
 
 function startTimer() {
@@ -81,6 +101,7 @@ function resetGameState() {
 }
 
 function saveGameState() {
+  localStorage.setItem("dayOffset", dayOffset);
   localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
   localStorage.setItem("currRowIndex", currRowIndex);
   localStorage.setItem("status", gameStatus);
@@ -96,29 +117,29 @@ function saveGameState() {
 }
 
 function loadGameState() {
-  var storedDayOffset = localStorage.getItem("dayOffset");
-  // new word/day, don't load previous game state, reset
-  if (dayOffset != storedDayOffset) {
-    resetGameState();
-    return;
-  }
-  
-  guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
-  currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
-  gameStatus = localStorage.getItem("status") || gameStatus;
-
-  let boardState = localStorage.getItem("boardState");
-  if (boardState) document.getElementById("board").innerHTML = boardState;
-
-  let keyboardState = localStorage.getItem("keyboardState");
-  if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
-
   stats = JSON.parse(localStorage.getItem("stats")) || stats;
   winMessageCounts = JSON.parse(localStorage.getItem("winMessageCounts")) || winMessageCounts;
 
-  if (gameStatus === "WIN" || gameStatus === "LOSE") {
-    updateStatsModal();
-    openModal(stats_modal);
+  let storedDayOffset = localStorage.getItem("dayOffset");
+  // new word/day, don't load previous game state, reset
+  if (dayOffset != storedDayOffset) {
+    resetGameState();
+  } else {
+    dayOffset = localStorage.getItem("dayOffset") || dayOffset;
+    guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
+    currRowIndex = localStorage.getItem("currRowIndex") || currRowIndex;
+    gameStatus = localStorage.getItem("status") || gameStatus;
+
+    let boardState = localStorage.getItem("boardState");
+    if (boardState) document.getElementById("board").innerHTML = boardState;
+
+    let keyboardState = localStorage.getItem("keyboardState");
+    if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
+
+    if (gameStatus === "WIN" || gameStatus === "LOSE") {
+      updateStatsModal();
+      openModal(stats_modal);
+    }
   }
 }
 
@@ -299,7 +320,7 @@ function getActiveTiles() {
 function getLetterCounts() {
   // map to store char counts of word, use to change tile colors when there are dup letters
   let letterCounts = {}; // APPLE -> {A:1, P:2, L:1, E:1}
-  for (let i = 0; i < word.length; ++i) {
+  for (let i = 0; i < WORD_LENGTH; ++i) {
     let l = word[i];
     if (letterCounts[l]) {
       letterCounts[l]++;
@@ -423,7 +444,7 @@ function checkGameOver(guess, tiles) {
     stats["currStreak"]++;
     stats["numOfWins"]++;
     stats["gamesPlayed"]++;
-  if (currStreak > maxStreak) maxStreak = currStreak;
+  if (stats["currStreak"] > stats["maxStreak"]) stats["maxStreak"] = stats["currStreak"];
   } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
     displayMessage(word, 1300);
     gameStatus = "LOSE";
