@@ -60,6 +60,11 @@ function refreshAt(hour, minute, second) {
 
   var timeout = (then.getTime() - now.getTime());
   setTimeout(function() {
+    if (gameStatus === "IN_PROGRESS") {
+      // reset streak if a game wasn't played today
+      stats["currStreak"] = 0;
+      localStorage.setItem("stats", JSON.stringify(stats));
+    }
     window.location.reload(true);
   }, timeout);
 }
@@ -124,6 +129,7 @@ function loadGameState() {
   // new word/day, don't load previous game state, reset
   if (dayOffset != storedDayOffset) {
     resetGameState();
+    initLocalStorage();
   } else {
     dayOffset = localStorage.getItem("dayOffset") || dayOffset;
     guessedWords = JSON.parse(localStorage.getItem("guessedWords")) || guessedWords;
