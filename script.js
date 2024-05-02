@@ -1,91 +1,86 @@
 const WORD_LENGTH = 5;
 const NUM_OF_GUESSES = 6;
-const board = document.querySelector("#board");
-const messageContainer = document.querySelector("#message-container");
 
-const instructions_modal = document.querySelector("#instructions-modal");
+const DANCE_ANIMATION_DURATION = 500;
+const FLIP_ANIMATION_DURATION = 250;
+const MESSAGE_DURATION = 1000;
+const MODAL_DELAY = 1500;
+
+const board = document.querySelector(".board");
+const keyboard = document.querySelector(".keyboard");
+const messageContainer = document.querySelector(".message-container");
+
+const info_modal = document.querySelector("#info-modal");
 const stats_modal = document.querySelector("#stats-modal");
 const overlay = document.querySelector(".overlay");
 const help_btn = document.querySelector("#help-btn");
 const stats_btn = document.querySelector("#stats-btn");
-const instructions_close_btn = document.querySelector("#instructions-close-btn");
+const info_close_btn = document.querySelector("#info-close-btn");
 const stats_close_btn = document.querySelector("#stats-close-btn");
 
-var offsetFromDate = new Date(2024, 0, 1);
+const offsetFromDate = new Date(2024, 0, 1);
 var dayOffset = Math.floor((Date.now() - offsetFromDate) / 1000 / 60 / 60 / 24);
 var word = wordList[dayOffset].toUpperCase();
+
 var guessedWords = [];
 var currRowIndex = 0;
 var gameStatus = "IN_PROGRESS";
-var stats = {
-  gamesPlayed: 0,
-  numOfWins: 0,
-  currStreak: 0,
-  maxStreak: 0
-};
-var winMessageCounts = {
-  genius: 0,
-  magnificient: 0,
-  impressive: 0,
-  splendid: 0,
-  great: 0,
-  phew: 0
-};  
+var stats = {gamesPlayed: 0, numOfWins: 0, currStreak: 0, maxStreak: 0};
+var winMessageCounts = {genius: 0, magnificient: 0, impressive: 0, splendid: 0, great: 0, phew: 0};  
+const messageMap = {1: "genius", 2: "magnificient", 3: "impressive", 4: "splendid", 5: "great", 6: "phew"};
 
-// initialize
 document.addEventListener("DOMContentLoaded", () => {
   initLocalStorage();
   createBoard();
   createKeyboard();
   startTimer();
   setInterval(startTimer, 1000);
-  refreshAt(24, 0, 0);
+  refreshPageAt(24, 0, 0);
   loadGameState();
   startInteractions();
   modalInteractions();
-})
+});
 
-function refreshAt(hour, minute, second) {
-  var now = new Date();
-  var then = new Date();
+function startTimer() {
+  let start = new Date;
+  start.setHours(24, 0, 0, 0);
+  let diff = start - Date.now();
+  if (diff <= 0) {
+    // reset timer once midnight hits
+    start = start.getTime() + (24 * 60 * 60 * 1000);
+    diff = start - Date.now();
+  }
+  let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  let seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-  if(now.getHours() > hour ||
-    (now.getHours() == hour && now.getMinutes() > minute) ||
-    now.getHours() == hour && now.getMinutes() == minute && now.getSeconds() >= second) {
-      then.setDate(now.getDate() + 1);
+  hours = hours < 10 ? "0" + hours : hours;
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  seconds = seconds < 10 ? "0" + seconds : seconds;
+  document.querySelector("#countdown").textContent = hours + ":" + minutes + ":" + seconds;
+}
+
+function refreshPageAt(hour, minute, second) {
+  let now = new Date();
+  let then = new Date();
+
+  if(now.getHours() > hour || (now.getHours() == hour && now.getMinutes() > minute) ||
+     now.getHours() == hour && now.getMinutes() == minute && now.getSeconds() >= second) {
+    then.setDate(now.getDate() + 1);
   }
   then.setHours(hour);
   then.setMinutes(minute);
   then.setSeconds(second);
 
-  var timeout = (then.getTime() - now.getTime());
-  setTimeout(function() {
+  let timeout = (then.getTime() - now.getTime());
+  setTimeout(() => {
     if (gameStatus === "IN_PROGRESS") {
       // reset streak if a game wasn't played today
       stats["currStreak"] = 0;
       localStorage.setItem("stats", JSON.stringify(stats));
     }
-    window.location.reload(true);
+    window.location.reload();
   }, timeout);
-}
-
-function startTimer() {
-  let start = new Date;
-  start.setHours(24, 0, 0, 0);
-  let diff = start - Date.now(); // time elapsed since start
-    if (diff <= 0) {
-      // reset timer once it reaches 0
-      start = start.getTime() + (24 * 60 * 60 * 1000);
-      diff = start - Date.now();
-    }
-    let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    let seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    document.querySelector("#countdown").textContent = hours + ":" + minutes + ":" + seconds;
 }
 
 function initLocalStorage() {
@@ -96,38 +91,13 @@ function initLocalStorage() {
   if (!localStorage.getItem("winMessageCounts")) localStorage.setItem("winMessageCounts", JSON.stringify(winMessageCounts));
 }
 
-function resetGameState() {
-  localStorage.removeItem("dayOffset");
-  localStorage.removeItem("guessedWords");
-  localStorage.removeItem("currRowIndex");
-  localStorage.removeItem("status");
-  localStorage.removeItem("boardState");
-  localStorage.removeItem("keyboardState");
-}
-
-function saveGameState() {
-  localStorage.setItem("dayOffset", dayOffset);
-  localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
-  localStorage.setItem("currRowIndex", currRowIndex);
-  localStorage.setItem("status", gameStatus);
-
-  let board = document.getElementById("board");
-  localStorage.setItem("boardState", board.innerHTML);
-
-  let keyboard = document.getElementById("keyboard");
-  localStorage.setItem("keyboardState", keyboard.innerHTML);
-
-  localStorage.setItem("stats", JSON.stringify(stats));
-  localStorage.setItem("winMessageCounts", JSON.stringify(winMessageCounts));
-}
-
 function loadGameState() {
   stats = JSON.parse(localStorage.getItem("stats")) || stats;
   winMessageCounts = JSON.parse(localStorage.getItem("winMessageCounts")) || winMessageCounts;
 
   let storedDayOffset = localStorage.getItem("dayOffset");
-  // new word/day, don't load previous game state, reset
   if (dayOffset != storedDayOffset) {
+    // new word/day, don't load previous game state, reset
     resetGameState();
     initLocalStorage();
   } else {
@@ -137,10 +107,10 @@ function loadGameState() {
     gameStatus = localStorage.getItem("status") || gameStatus;
 
     let boardState = localStorage.getItem("boardState");
-    if (boardState) document.getElementById("board").innerHTML = boardState;
+    if (boardState) document.querySelector(".board").innerHTML = boardState;
 
     let keyboardState = localStorage.getItem("keyboardState");
-    if (keyboardState) document.getElementById("keyboard").innerHTML = keyboardState;
+    if (keyboardState) document.querySelector(".keyboard").innerHTML = keyboardState;
 
     if (gameStatus === "WIN" || gameStatus === "LOSE") {
       updateStatsModal();
@@ -149,37 +119,29 @@ function loadGameState() {
   }
 }
 
-function updateStatsModal() {
-  document.querySelector("#played").textContent = stats["gamesPlayed"];
-  const winPercent = (stats["numOfWins"] == 0 && stats["gamesPlayed"] == 0) ? 0 : Math.floor((stats["numOfWins"]/stats["gamesPlayed"]) * 100);
-  document.querySelector("#win-percentage").textContent = winPercent;
-  document.querySelector("#current-streak").textContent = stats["currStreak"];
-  document.querySelector("#max-streak").textContent = stats["maxStreak"];
+function saveGameState() {
+  localStorage.setItem("dayOffset", dayOffset);
+  localStorage.setItem("guessedWords", JSON.stringify(guessedWords));
+  localStorage.setItem("currRowIndex", currRowIndex);
+  localStorage.setItem("status", gameStatus);
 
-  // get highest guess count, width of bars will be relative to this count
-  const maxGuessCount = Math.max(...Object.values(winMessageCounts));
+  let board = document.querySelector(".board");
+  localStorage.setItem("boardState", board.innerHTML);
 
-  document.querySelector("#guess-1").style.width = (winMessageCounts["genius"] == 0) ? 4 + "%" : (100 * winMessageCounts["genius"] / maxGuessCount) + "%";
-  document.querySelector("#guess-1").textContent = winMessageCounts["genius"];
+  let keyboard = document.querySelector(".keyboard");
+  localStorage.setItem("keyboardState", keyboard.innerHTML);
 
-  document.querySelector("#guess-2").style.width = (winMessageCounts["magnificient"] == 0) ? 4 + "%" : (100 * winMessageCounts["magnificient"] / maxGuessCount) + "%";
-  document.querySelector("#guess-2").textContent = winMessageCounts["magnificient"];
+  localStorage.setItem("stats", JSON.stringify(stats));
+  localStorage.setItem("winMessageCounts", JSON.stringify(winMessageCounts));
+}
 
-  document.querySelector("#guess-3").style.width = (winMessageCounts["impressive"] == 0) ? 4 + "%" : (100 * winMessageCounts["impressive"] / maxGuessCount) + "%";
-  document.querySelector("#guess-3").textContent = winMessageCounts["impressive"];
-
-  document.querySelector("#guess-4").style.width = (winMessageCounts["splendid"] == 0) ? 4 + "%" : (100 * winMessageCounts["splendid"] / maxGuessCount) + "%";
-  document.querySelector("#guess-4").textContent = winMessageCounts["splendid"];
-
-  document.querySelector("#guess-5").style.width = (winMessageCounts["great"] == 0) ? 4 + "%" : (100 * winMessageCounts["great"] / maxGuessCount) + "%";
-  document.querySelector("#guess-5").textContent = winMessageCounts["great"];
-
-  document.querySelector("#guess-6").style.width = (winMessageCounts["phew"] == 0) ? 4 + "%" : (100 * winMessageCounts["phew"] / maxGuessCount) + "%";
-  document.querySelector("#guess-6").textContent = winMessageCounts["phew"];
-
-  if (gameStatus === "WIN") {
-    document.querySelector("#guess-" + (Number(currRowIndex) + 1)).style.backgroundColor = "var(--correct)";
-  }
+function resetGameState() {
+  localStorage.removeItem("dayOffset");
+  localStorage.removeItem("guessedWords");
+  localStorage.removeItem("currRowIndex");
+  localStorage.removeItem("status");
+  localStorage.removeItem("boardState");
+  localStorage.removeItem("keyboardState");
 }
 
 function createBoard() {
@@ -210,18 +172,17 @@ function createKeyboard() {
       keyTile.textContent = key;
 
       if (key == "ENTER") {
-        keyTile.dataset.key = "enter";
         keyTile.classList.add("enter-keyboard-tile");
       } else if (key == "⌫") {
         keyTile.dataset.key = "backspace";
-        keyTile.classList.add("backspace-keyboard-tile")
+        keyTile.classList.add("backspace-keyboard-tile");
       } else if ("A" <= key && key <= "Z") {
         keyTile.dataset.key = key;
-        keyTile.classList.add("keyboard-tile");
       }
+      keyTile.classList.add("keyboard-tile");
       keyboardRow.appendChild(keyTile);
     }
-    document.getElementById("keyboard").appendChild(keyboardRow);
+    document.querySelector(".keyboard").appendChild(keyboardRow);
   }
 }
 
@@ -229,40 +190,40 @@ function startInteractions() {
   if (gameStatus === "WIN" || gameStatus === "LOSE") return;
   document.addEventListener("click", handleMouseClick);
   document.addEventListener("keyup", handleKeyPress);
-  document.querySelector("#keyboard").style.pointerEvents = "auto";
+  document.querySelector(".keyboard").style.pointerEvents = "auto";
 }
 
 function stopInteractions() {
   document.removeEventListener("click", handleMouseClick);
   document.removeEventListener("keyup", handleKeyPress);
-  document.querySelector("#keyboard").style.pointerEvents = "none";
+  document.querySelector(".keyboard").style.pointerEvents = "none";
 }
 
 function modalInteractions() {
-  help_btn.addEventListener("click", function() {
-    openModal(instructions_modal);
+  help_btn.addEventListener("click", () => {
+    openModal(info_modal);
   });
-  instructions_close_btn.addEventListener("click", function() {
-    closeModal(instructions_modal);
+  info_close_btn.addEventListener("click", () => { 
+    closeModal(info_modal);
   });
-  stats_btn.addEventListener("click", function() {
+  stats_btn.addEventListener("click", () => {
     updateStatsModal();
     openModal(stats_modal);
   });
-  stats_close_btn.addEventListener("click", function() {
+  stats_close_btn.addEventListener("click", () => {
     closeModal(stats_modal);
-  })
-  overlay.addEventListener("click", function() {
+  });
+  overlay.addEventListener("click", () => {
     closeModal(stats_modal);
-    closeModal(instructions_modal);
+    closeModal(info_modal);
   });
   document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape" && !instructions_modal.classList.contains("hidden")) {
-      closeModal(instructions_modal);
+    if (e.key === "Escape" && !info_modal.classList.contains("hidden")) {
+      closeModal(info_modal);
     } else if (e.key === "Escape" && !stats_modal.classList.contains("hidden")) {
       closeModal(stats_modal);
     }
-  })
+  });
 }
 
 function openModal(modal) {
@@ -277,13 +238,46 @@ function closeModal(modal) {
   startInteractions();
 }
 
+function updateStatsModal() {
+  document.querySelector("#played").textContent = stats["gamesPlayed"];
+  const winPercent = (stats["numOfWins"] == 0 && stats["gamesPlayed"] == 0) ? 0 : Math.floor((stats["numOfWins"]/stats["gamesPlayed"]) * 100);
+  document.querySelector("#win-percentage").textContent = winPercent;
+  document.querySelector("#current-streak").textContent = stats["currStreak"];
+  document.querySelector("#max-streak").textContent = stats["maxStreak"];
+
+  // get highest guess count, width of bars will be relative to this count
+  const maxGuessCount = Math.max(...Object.values(winMessageCounts));
+
+  document.querySelector("#genius").style.width = (winMessageCounts["genius"] == 0) ? 4 + "%" : (100 * winMessageCounts["genius"] / maxGuessCount) + "%";
+  document.querySelector("#genius").textContent = winMessageCounts["genius"];
+
+  document.querySelector("#magnificient").style.width = (winMessageCounts["magnificient"] == 0) ? 4 + "%" : (100 * winMessageCounts["magnificient"] / maxGuessCount) + "%";
+  document.querySelector("#magnificient").textContent = winMessageCounts["magnificient"];
+
+  document.querySelector("#impressive").style.width = (winMessageCounts["impressive"] == 0) ? 4 + "%" : (100 * winMessageCounts["impressive"] / maxGuessCount) + "%";
+  document.querySelector("#impressive").textContent = winMessageCounts["impressive"];
+
+  document.querySelector("#splendid").style.width = (winMessageCounts["splendid"] == 0) ? 4 + "%" : (100 * winMessageCounts["splendid"] / maxGuessCount) + "%";
+  document.querySelector("#splendid").textContent = winMessageCounts["splendid"];
+
+  document.querySelector("#great").style.width = (winMessageCounts["great"] == 0) ? 4 + "%" : (100 * winMessageCounts["great"] / maxGuessCount) + "%";
+  document.querySelector("#great").textContent = winMessageCounts["great"];
+
+  document.querySelector("#phew").style.width = (winMessageCounts["phew"] == 0) ? 4 + "%" : (100 * winMessageCounts["phew"] / maxGuessCount) + "%";
+  document.querySelector("#phew").textContent = winMessageCounts["phew"];
+
+  if (gameStatus === "WIN") {
+    document.querySelector("#" + messageMap[(Number(currRowIndex) + 1)]).style.backgroundColor = "var(--correct)";
+  }
+}
+
 function handleMouseClick(e) {
-  if (e.target.matches(".keyboard-tile")) {
-    pressKey(e.target.dataset.key);
-  } else if (e.target.matches(".backspace-keyboard-tile")) {
+  if (e.target.matches(".backspace-keyboard-tile")) {
     deleteKey();
   } else if (e.target.matches(".enter-keyboard-tile")) {
     submitGuess();
+  } else if (e.target.matches(".keyboard-tile")) {
+    pressKey(e.target.dataset.key);
   }
 }
 
@@ -316,7 +310,7 @@ function pressKey(key) {
   tile.classList.add("bounce");
   tile.addEventListener("animationend", () => {
     tile.classList.remove("bounce");
-  }, { once: true });
+  }, {once: true});
 }
 
 function getActiveTiles() {
@@ -339,8 +333,6 @@ function getLetterCounts() {
 
 function submitGuess() {
   const activeTiles = [...getActiveTiles()];
-
-  // check if 5 letters were entered
   if (activeTiles.length !== WORD_LENGTH) {
     displayMessage("Not enough letters");
     shakeTiles(activeTiles);
@@ -349,7 +341,7 @@ function submitGuess() {
 
   let guess = activeTiles.reduce((word, tile) => {
     return word + tile.dataset.letter.toLowerCase();
-  }, "")
+  }, "");
 
   if (!guessList.includes(guess)) { 
     displayMessage("Not in word list");
@@ -359,15 +351,19 @@ function submitGuess() {
     shakeTiles(activeTiles);
   } else {
     guessedWords.push(guess);
+    let letterCounts = getLetterCounts();
     stopInteractions();
     activeTiles.forEach((tile, index) => {
       setTimeout(() => {
         tile.classList.add("flip");
-      }, (index * 250) / 2)
-    })
-    let letterCounts = getLetterCounts();
-    activeTiles.forEach((...args) => { updateCorrectTiles(...args, letterCounts) });
-    activeTiles.forEach((...args) => { updateTiles(...args, guess.toUpperCase(), letterCounts) });
+      }, (index * FLIP_ANIMATION_DURATION) / 2);
+    });
+    activeTiles.forEach((...args) => {
+      updateCorrectTiles(...args, letterCounts);
+    });
+    activeTiles.forEach((...args) => { 
+      updateTiles(...args, guess.toUpperCase(), letterCounts);
+    });
   } 
 }
 
@@ -383,7 +379,7 @@ function updateCorrectTiles(tile, index, array, letterCounts) {
         tile.classList.add("correct");
         keyTile.dataset.state = "correct";  
       }
-    }, {once: true})
+    }, {once: true});
   }
 }
 
@@ -407,15 +403,19 @@ function updateTiles(tile, index, array, guess, letterCounts) {
 
     if (index === array.length - 1) {
       tile.addEventListener("transitionend", () => {
-        // update keyboard tiles after board tiles have finished flipping
-        array.forEach(tile => { updateKeyboardTiles(tile) });
+        // update keyboard tiles only after all board tiles have finished flipping
+        array.forEach(tile => {
+          updateKeyboardTiles(tile);
+        });
         startInteractions();
-        const promise = new Promise(() => {checkGameOver(guess, array)});
-        // save game state after checkGameOver is fully finished
+        const promise = new Promise(() => {
+          checkGameOver(guess, array);
+        });
+        // save game state only after checkGameOver is fully finished
         promise.then(saveGameState());
-      }, {once: true})
+      }, {once: true});
     }
-  }, {once: true})
+  }, {once: true});
 }
 
 function updateKeyboardTiles(tile) {
@@ -441,34 +441,34 @@ function checkGameOver(guess, tiles) {
   if (guess === word) {
     displayWinMessage(currRowIndex);
     danceTiles(tiles);
-    setTimeout(() => {
-      updateStatsModal();
-      openModal(stats_modal);
-    }, 1500)
     stopInteractions();
     gameStatus = "WIN";
     stats["currStreak"]++;
     stats["numOfWins"]++;
     stats["gamesPlayed"]++;
-  if (stats["currStreak"] > stats["maxStreak"]) stats["maxStreak"] = stats["currStreak"];
-  } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
-    displayMessage(word, 1300);
-    gameStatus = "LOSE";
+    if (stats["currStreak"] > stats["maxStreak"]) stats["maxStreak"] = stats["currStreak"];
     setTimeout(() => {
       updateStatsModal();
       openModal(stats_modal);
-    }, 1500)
+    }, MODAL_DELAY);
+  } else if (currRowIndex == (NUM_OF_GUESSES - 1)) {
+    displayMessage(word, 1300);
     stopInteractions();
+    gameStatus = "LOSE";
     stats["currRowIndex"]++;
     stats["currStreak"] = 0;
     stats["gamesPlayed"]++;
+    setTimeout(() => {
+      updateStatsModal();
+      openModal(stats_modal);
+    }, MODAL_DELAY);
   } else {
     currRowIndex++;
   }
 }
 
 function displayWinMessage(row) {
-  // diff message if you get the answer on certain guess
+  // display diff message if you get the answer on certain guess
   if (row == 0) {
     displayMessage("Genius");
     winMessageCounts["genius"]++;
@@ -500,8 +500,8 @@ function displayMessage(message) {
     toast.classList.add("hide");
     toast.addEventListener("transitionend", () => {
       toast.remove();
-    })
-  }, 1000);
+    });
+  }, MESSAGE_DURATION);
 } 
 
 function shakeTiles(tiles) {
@@ -509,19 +509,19 @@ function shakeTiles(tiles) {
     tile.classList.add("shake");
     tile.addEventListener("animationend", () => {
       tile.classList.remove("shake");
-    }, { once: true });
-  })
+    }, {once: true});
+  });
 }
 
 function danceTiles(tiles) {
   tiles.forEach((tile, index) => {
     setTimeout(() => {
       tile.classList.add("dance");
-    }, (index * 500) / 5)
-  })
+    }, (index * DANCE_ANIMATION_DURATION) / 5);
+  });
   tiles[4].addEventListener("animationend", () => {
     tiles.forEach(tile => {
       tile.classList.remove("dance");
-    })
-  })
+    });
+  });
 }

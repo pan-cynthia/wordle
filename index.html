@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
-  <div id="header">
-    <div id="menu-left"></div>
-    <div id="title">
+  <div class="header">
+    <div class="header-left"></div>
+    <div class="title">
       <span class="title-tile correct">W</span>
       <span class="title-tile present">O</span>
       <span class="title-tile absent">R</span>
@@ -19,22 +19,16 @@
       <span class="title-tile present">L</span>
       <span class="title-tile absent">E</span>
     </div>
-    <div id="menu-right">
-      <button id="help-btn">
-          <span class="material-symbols-outlined">help</span>
-      </button>
-      <button id="stats-btn">
-        <span class="material-symbols-outlined">leaderboard</span>
-      </button>
+    <div class="header-right">
+      <button id="help-btn" class="material-symbols-outlined">help</button>
+      <button id="stats-btn" class="material-symbols-outlined">leaderboard</button>
     </div>
   </div>
   <hr size="1">
-  <div class="modal hidden" id="instructions-modal">
-    <div id="instructions-modal-content">
-      <h2 style="letter-spacing: 0px;">How To Play</h2>
-      <button class="close-btn" id="instructions-close-btn">
-        <span class="material-symbols-outlined">close</span>
-      </button>
+  <div id="info-modal" class="modal hidden">
+    <div id="info-modal-content">
+      <h2 style="letter-spacing: 0;">How To Play</h2>
+      <button id="info-close-btn" class="close-btn material-symbols-outlined">close</button>
       <h3>Guess the Wordle in 6 tries.</h3>
       <ul class="instructions">
         <li>Each guess must be a valid 5-letter word.</li>
@@ -42,10 +36,10 @@
         <li>Letters can appear more than once in the Wordle.</li>
         <li>The color of the tiles will change to show how close your guess was to the word.</li>
       </ul>
-      <section class="examples">
+      <div class="examples">
         <h3>Examples</h3>
         <div class="example">
-          <div class="example-tile-container">
+          <div class="example-container">
             <div class="example-tile correct">L</div>
             <div class="example-tile">U</div>
             <div class="example-tile">C</div>
@@ -58,7 +52,7 @@
           </p>
         </div>
         <div class="example">
-          <div class="example-tile-container">
+          <div class="example-container">
             <div class="example-tile">P</div>
             <div class="example-tile present">I</div>
             <div class="example-tile">Z</div>
@@ -71,7 +65,7 @@
           </p>
         </div>
         <div class="example">
-          <div class="example-tile-container">
+          <div class="example-container">
             <div class="example-tile">Z</div>
             <div class="example-tile">E</div>
             <div class="example-tile">B</div>
@@ -83,85 +77,81 @@
             is in not the word in any spot.
           </p>
         </div>
-      </section>
+      </div>
       <p><strong>A new puzzle is released daily at midnight.</strong></p>
     </div>
   </div>
-  <div class="modal hidden" id="stats-modal">
+  <div id="stats-modal" class="modal hidden">
     <div id="stats-modal-content">
+      <button id="stats-close-btn" class="close-btn material-symbols-outlined">close</button>
       <h2>STATISTICS</h2>
-      <button class="close-btn" id="stats-close-btn">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-      <section id="stats">
-        <div class="stats-container">
-          <p class="stats-num" id="played"></p>
+      <div id="stats-container">
+        <div class="stats">
+          <p id="played" class="stats-num"></p>
           <p>Played</p>
         </div>
-        <div class="stats-container">
-          <p class="stats-num" id="win-percentage"></p>
+        <div class="stats">
+          <p id="win-percentage" class="stats-num" ></p>
           <p>Win %</p>
         </div>
-        <div class="stats-container">
-          <p class="stats-num" id="current-streak"></p>
+        <div class="stats">
+          <p id="current-streak" class="stats-num"></p>
           <p>Current Streak</p>
         </div>
-        <div class="stats-container">
-          <p class="stats-num" id="max-streak"></p>
+        <div class="stats">
+          <p id="max-streak" class="stats-num"></p>
           <p>Max Streak</p>
         </div>
-      </section>
-      <section id="guess-distribution">
-        <h2>GUESS DISTRIBUTION</h2>
-        <table id="distribution">
-          <tr>
-            <td class="guess-num">1</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-1"></div>
-            </td>
-          </tr>
-          <tr>
-            <td class="guess-num">2</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-2"></div>
-            </td>
-          </tr>
-          <tr>
-            <td class="guess-num">3</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-3"></div>
-            </td>
-          </tr>
-          <tr>
-            <td class="guess-num">4</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-4"></div>
-            </td>
-          </tr>
-          <tr>
-            <td class="guess-num">5</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-5"></div>
-            </td>
-          </tr>
-          <tr>
-            <td class="guess-num">6</td>
-            <td class="guess-container">
-              <div class="guess-bar" id="guess-6"></div>
-            </td>
-          </tr>
-        </table>
-      </section>
-      <div id="timer">
+      </div>
+      <h2>GUESS DISTRIBUTION</h2>
+      <table id="guess-distribution">
+        <tr>
+          <td class="guess-num">1</td>
+          <td class="guess-bar-container">
+            <div id="genius" class="guess-bar"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="guess-num">2</td>
+          <td class="guess-bar-container">
+            <div id="magnificient" class="guess-bar"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="guess-num">3</td>
+          <td class="guess-bar-container">
+            <div id="impressive" class="guess-bar"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="guess-num">4</td>
+          <td class="guess-bar-container">
+            <div id="splendid" class="guess-bar"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="guess-num">5</td>
+          <td class="guess-bar-container">
+            <div id="great" class="guess-bar"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="guess-num">6</td>
+          <td class="guess-bar-container">
+            <div id="phew" class="guess-bar"></div>
+          </td>
+        </tr>
+      </table>
+      <div class="timer">
         <h2>NEXT WORDLE</h2>
         <p id="countdown"></p>
       </div>
     </div>
   </div>
   <div class="overlay hidden"></div>
-  <div id="message-container"></div>
-  <div id="board"></div>
-  <div id="keyboard"></div>
+  <div class="message-container"></div>
+  <div class="board"></div>
+  <div class="keyboard"></div>
   <script src="wordList.js"></script>
   <script src="guessList.js"></script>
   <script src="script.js"></script>
